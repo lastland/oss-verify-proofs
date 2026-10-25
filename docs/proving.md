@@ -3,8 +3,14 @@
 A proof is a directory `proofs/<project>/<harness>/<statement>/` holding a
 `Proof.v`, any helper `.v` files beside it, and a `proof.yaml`; `oft generate`
 adds its `dune` file. Files that several proofs of a harness share go in
-`proofs/<project>/<harness>/lib/`. `Proof.v` ends in a theorem named after the
-statement:
+`proofs/<project>/<harness>/lib/`. Helpers shared across harnesses go in the
+optional `proofs/lib/`, under `OssFuzzTheorems.Proofs.Shared`; for example,
+`proofs/lib/ZBits.v` is imported with
+`From OssFuzzTheorems.Proofs.Shared Require Import ZBits.` Both libraries may
+hold `.v` files in subdirectories, which extend their logical namespace.
+`oft generate` gives the shared library its own package,
+`rocq-oss-fuzz-theorems-proofs-shared`, and adds it to proof dependencies when
+the directory is present. `Proof.v` ends in a theorem named after the statement:
 
     From OssFuzzTheorems.zlib.checksum_fuzzer Require Import Statements.
 
@@ -53,8 +59,8 @@ same rule refuses those.
 - The smallest published plain images are about 42 KB
   ([index/binaries.tsv](../index/binaries.tsv) lists every size). Statements about
   them still need the start-up code of musl and the driver to be reasoned about.
-  The published proofs do this for their own binaries, in their `lib/`; no
-  shared library for it is published yet.
+  The published proofs do this for their own binaries, in their `lib/`;
+  reusable helpers across harnesses live in `proofs/lib/`.
 - A refutation is often one concrete execution, and a good first result. So is a
   counterexample to a halts statement: a failing input for the real binary,
   which goes in `counterexamples/<project>/<harness>/<statement>/` with

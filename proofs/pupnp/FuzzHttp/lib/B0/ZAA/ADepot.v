@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require Import ZBits.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem Fpu.
@@ -35,9 +36,9 @@ Definition depot_hash (tr : list Z) : Z := mm_fin (fold_left mm_add tr (mm_init 
 
 Lemma M64_eq : M64 = 2^64. Proof. reflexivity. Qed.
 Lemma lxor_range : forall a b, 0 <= a < M64 -> 0 <= b < M64 -> 0 <= Z.lxor a b < M64.
-Proof. rewrite M64_eq. intros. apply PropExec.Z_lxor_range; assumption. Qed.
+Proof. rewrite M64_eq. intros. apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_lxor_range; assumption. Qed.
 Lemma shiftr_range : forall a k, 0 <= a < M64 -> 0 <= k -> 0 <= Z.shiftr a k < M64.
-Proof. rewrite M64_eq. intros. apply PropExec.Z_shiftr_range; lia. Qed.
+Proof. rewrite M64_eq. intros. apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_shiftr_range; lia. Qed.
 Lemma mod_range : forall a, 0 <= a mod M64 < M64. Proof. intros. rewrite M64_eq. apply Z.mod_pos_bound. lia. Qed.
 Lemma mm_add_range : forall v k, 0 <= mm_add v k < M64. Proof. intros. unfold mm_add. apply mod_range. Qed.
 Lemma mm_init_range : forall n, 0 <= mm_init n < M64.

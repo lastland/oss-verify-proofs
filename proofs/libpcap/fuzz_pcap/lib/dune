@@ -4,4 +4,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib)
  (package rocq-oss-fuzz-theorems-libpcap-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.libpcap.fuzz_pcap))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.libpcap.fuzz_pcap))

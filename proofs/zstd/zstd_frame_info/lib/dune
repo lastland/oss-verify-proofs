@@ -4,4 +4,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.zstd.zstd_frame_info.lib)
  (package rocq-oss-fuzz-theorems-zstd-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.zstd.zstd_frame_info))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.zstd.zstd_frame_info))

@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require BvBase State StackLayout Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys Require Syscall Uapi.
@@ -15,7 +16,7 @@ Import Stdlib.ZArith.ZArith Stdlib.Lists.List Stdlib.Bool.Bool Stdlib.micromega.
 Import LinuxProcessSemantics.LinuxProcessSem.BvBase LinuxProcessSemantics.LinuxProcessSem.State LinuxProcessSemantics.LinuxProcessSem.StackLayout LinuxProcessSemantics.LinuxProcessSem.Run.
 Import LinuxProcessSemantics.LinuxProcessSem.Sys.Syscall LinuxProcessSemantics.LinuxProcessSem.Sys.Uapi.
 Import LinuxProcessSemantics.LinuxProcessSem.Sys.Mm.Mmap.
-Import QWXq.Mq1.
+Import OssFuzzTheorems.Proofs.Shared.PlacementSearch.
 Import ListNotations.
 Open Scope Z_scope.
 
@@ -29,11 +30,11 @@ Proof. reflexivity. Qed.
 
 Definition placement_ok (h : VmMaps) (aZ nZ : Z) : Prop :=
 bottomup_floor <= aZ
-\/ no_higher_fit (vm_reserved h ++ vm_maps h) aZ nZ (bv_unsigned (vm_mmap_base h)).
+\/ OssFuzzTheorems.Proofs.Shared.PlacementSearch.no_higher_fit (vm_reserved h ++ vm_maps h) aZ nZ (bv_unsigned (vm_mmap_base h)).
 
 Definition placement_ok_b (h : VmMaps) (aZ nZ : Z) : bool :=
 (bottomup_floor <=? aZ)%Z
-|| negb (higher_fit_b (vm_reserved h ++ vm_maps h) aZ nZ (bv_unsigned (vm_mmap_base h))).
+|| negb (OssFuzzTheorems.Proofs.Shared.PlacementSearch.higher_fit_b (vm_reserved h ++ vm_maps h) aZ nZ (bv_unsigned (vm_mmap_base h))).
 
 Lemma placement_ok_b_of_floor : forall h aZ nZ,
 bottomup_floor <= aZ -> placement_ok_b h aZ nZ = true.
@@ -83,10 +84,9 @@ change (Z.testbit MAP_ANONYMOUS 5) with true in HL. change (Z.testbit MAP_NORESE
 destruct (Z.testbit (bv_unsigned flags) 5); discriminate.
 Qed.
 
-Lemma page_round_up_Z_aligned' : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 Lemma page_round_up_Z_pos' : forall z, 0 < z -> 0 < page_round_up_Z z.
-Proof. intros z Hz. pose proof (page_round_up_Z_ge z). lia. Qed.
+Proof. intros z Hz. pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge z). lia. Qed.
 
 Definition zero_random_draw (rdraw : bv 128) : Prop := rdraw = Z_to_bv 128 0.
 
@@ -330,4 +330,3 @@ ms_svc_pending := ms_svc_pending (init_machine_state segs init_pc ph init_sp ini
 ms_resv       := ms_resv (init_machine_state segs init_pc ph init_sp init_rnd nil nil uid hw); ms_fcsr := ms_fcsr (init_machine_state segs init_pc ph init_sp init_rnd nil nil uid hw);
 ms_mem        := overlay_argc_bytes init_sp argc base;
 ms_rom        := ms_rom (init_machine_state segs init_pc ph init_sp init_rnd nil nil uid hw) |}.
-

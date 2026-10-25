@@ -11,6 +11,7 @@ import subprocess
 import tarfile
 import tempfile
 import unittest
+from unittest import mock
 
 from oft import check, facts, fetch
 from oft.tests.helpers import tree
@@ -225,13 +226,13 @@ class Tools:
         with open(os.path.join(d, "wrapper.out"), "w") as f:
             f.write(wrapper)
         # `rocq dep -sort` prints, in order, the whole closure of the .v files it is given: the files of a library on its
-        # -Q path (a ...lib logical name) first, as the real one does, then the files given.  `rocq dep` prints make
+        # -Q path (a ...lib or Shared logical name) first, as the real one does, then the files given.  `rocq dep` prints make
         # rules, in which Sub/Deep.v requires Base.v beside Sub/, so a test can see that a library is compiled in
         # dependency order.
         self.put("rocq", 'echo "rocq $*" >> "%s"\nulimit -s >> "%s"\n'
                          'if [ "$1" = dep ] && [ "$2" = -sort ]; then\n'
                          '  prev=""; for a in "$@"; do\n'
-                         '    case "$a" in *.lib) find "$prev" -name "*.v" | sort ;; esac; prev="$a"; done\n'
+                         '    case "$a" in *.lib|OssFuzzTheorems.Proofs.Shared) find "$prev" -name "*.v" | sort ;; esac; prev="$a"; done\n'
                          '  for f in "$@"; do case "$f" in *.v) echo "$f" ;; esac; done; exit 0; fi\n'
                          'if [ "$1" = dep ]; then\n'
                          '  for f in "$@"; do case "$f" in *.v) x=""\n'
@@ -327,20 +328,132 @@ class Check(unittest.TestCase):
             self.assertEqual(rc, 1)
             self.assertIn("run ./oft fetch zlib", out)
 
-    def _proof(self, t, body="Theorem plain_halts_holds : True. Proof. exact I. Qed.\n", s="plain_halts"):
-        st = next(x for x in facts.load(t.root).statements() if x.id == "zlib/checksum_fuzzer/" + s)
-        t.put_yaml("proofs/zlib/checksum_fuzzer/%s/proof.yaml" % s, {
+    def _proof(self, t, body="Theorem plain_halts_holds : True. Proof. exact I. Qed.\n", s="plain_halts",
+               unit="zlib/checksum_fuzzer"):
+        st = next(x for x in facts.load(t.root).statements() if x.id == unit + "/" + s)
+        t.put_yaml("proofs/%s/%s/proof.yaml" % (unit, s), {
             "schema": "oss-fuzz-theorems/proof/1", "proves": st.id, "fingerprint": st.fingerprint})
-        t.write("proofs/zlib/checksum_fuzzer/%s/Proof.v" % s, body)
+        t.write("proofs/%s/%s/Proof.v" % (unit, s), body)
         self.assertEqual(t.generate(), 0, t.last_output)
 
     LIB_MOD = "OssFuzzTheorems.Proofs.zlib.checksum_fuzzer.lib"
+    SHARED_MOD = "OssFuzzTheorems.Proofs.Shared"
 
     def _two_proofs_and_a_library(self, t):
         t.write("proofs/zlib/checksum_fuzzer/lib/Base.v", "Definition one := 1.\n")
         t.write("proofs/zlib/checksum_fuzzer/lib/Sub/Deep.v", "Definition two := 2.\n")
         self._proof(t)
         self._proof(t, "Theorem plain_halts_may_fail_holds : True. Proof. exact I. Qed.\n", s="plain_halts_may_fail")
+
+    def test_shared_sources_compile_once_before_harness_libraries_and_are_on_every_load_path(self):
+        with tree() as t:
+            t.write("toolchain/allowed-axioms.txt", "Corelib.Init.Something.prim\n")
+            t.write("proofs/lib/Base.v", "Definition one := 1.\n")
+            t.write("proofs/lib/Sub/Deep.v", "Definition two := 2.\n")
+            self._two_proofs_and_a_library(t)
+            self._proof(t, "Theorem asan_agrees_holds : True. Proof. exact I. Qed.\n",
+                        s="asan_agrees", unit="zlib/api-driver")
+            tl = self.tools()
+            base = t.path("base-statement-build")
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer", "zlib/api-driver"],
+                          parts="proofs", base=base, rocqchk=True)
+            self.assertEqual(rc, 0, out)
+            self.assertEqual(out.count("proofs/lib: 2 files compiled"), 1, out)
+            self.assertIn("3 step(s) passed, 0 failed", out)
+            calls = tl.calls().splitlines()
+            compiles = [c for c in calls if c.startswith("rocq compile")]
+            shared_dir = re.search(r"-Q (\S+) " + re.escape(self.SHARED_MOD) + r"\s", compiles[0]).group(1)
+            sharedq = "-Q %s %s" % (shared_dir, self.SHARED_MOD)
+            shared = [c for c in compiles if c.split()[-1].startswith(shared_dir + os.sep)]
+            self.assertEqual(len(shared), 2, "shared sources are not recompiled by either proof closure")
+            self.assertTrue(shared[0].endswith("/Base.v"))
+            self.assertTrue(shared[1].endswith("/Sub/Deep.v"))
+            self.assertLess(calls.index("finished Base.v"), calls.index(shared[1]))
+            coreq = "-Q %s/theories OssFuzzTheorems.Core" % base
+            for c in shared:
+                self.assertIn(coreq, c)
+                self.assertNotIn("OssFuzzTheorems.zlib.", c, "shared sources must not depend on one harness")
+                self.assertNotIn(self.LIB_MOD, c)
+            harness = [c for c in compiles if c.endswith(("/Base.v", "/Sub/Deep.v")) and c not in shared]
+            self.assertEqual(len(harness), 2)
+            self.assertLess(calls.index(shared[-1]), calls.index(harness[0]))
+            users = [c for c in compiles if c.endswith(("/Proof.v", "/Wrapper.v"))]
+            self.assertEqual(len(users), 6, "three direct proofs and three wrappers compile")
+            for c in harness + users:
+                self.assertIn(coreq, c)
+                self.assertIn(sharedq, c)
+            dep_sorts = [c for c in calls if c.startswith("rocq dep -sort")]
+            self.assertEqual(len(dep_sorts), 3)
+            for c in dep_sorts:
+                self.assertIn(sharedq, c)
+            chks = [c for c in calls if c.startswith("rocqchk")]
+            self.assertEqual(len(chks), 2, "rocqchk runs once per harness")
+            for c in chks:
+                self.assertIn(sharedq, c)
+            self.assertIn(self.LIB_MOD, chks[0])
+            self.assertNotIn(self.LIB_MOD, chks[1], "direct proofs need no harness library")
+
+    def test_a_shared_library_failure_is_cached_for_every_proof_and_harness(self):
+        with tree() as t:
+            t.write("toolchain/allowed-axioms.txt", "Corelib.Init.Something.prim\n")
+            t.write("proofs/lib/Shared.v", "Definition one := 1.\n")
+            self._two_proofs_and_a_library(t)
+            self._proof(t, "Theorem asan_agrees_holds : True. Proof. exact I. Qed.\n",
+                        s="asan_agrees", unit="zlib/api-driver")
+            tl = self.tools(compile_fails_on="Shared.v")
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer", "zlib/api-driver"],
+                          parts="proofs", rocqchk=True)
+            self.assertEqual(rc, 1)
+            self.assertEqual(out.count("proofs/lib: does not compile: Shared.v"), 3, out)
+            compiles = [c for c in tl.calls().splitlines() if c.startswith("rocq compile")]
+            self.assertEqual(len(compiles), 1, "a shared failure stops every dependent library and proof")
+            self.assertTrue(compiles[0].endswith("/Shared.v"))
+            self.assertNotIn("Wrapper.v", tl.calls())
+            self.assertNotIn("rocqchk", tl.calls())
+            self.assertIn("0 step(s) passed, 3 failed", out)
+
+    def test_shared_library_assumptions_still_fail_both_audits(self):
+        with tree() as t:
+            t.write("toolchain/allowed-axioms.txt", "Corelib.Init.Something.prim\n")
+            t.write("proofs/lib/Shared.v", "Definition one := 1.\n")
+            self._proof(t)
+            cheat = self.SHARED_MOD + ".Shared.cheat"
+            tl = self.tools(extra_axiom=cheat)
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
+            self.assertEqual(rc, 1)
+            self.assertIn("axioms outside the allowlist: " + cheat, out)
+            self.assertNotIn("rocqchk", tl.calls())
+            with open(os.path.join(self.d.name, "wrapper.out"), "w") as f:
+                f.write("Axioms:\nCorelib.Init.Something.prim : Prop\n")
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs", rocqchk=True)
+            self.assertEqual(rc, 1)
+            self.assertIn("axioms outside the allowlist: " + cheat, out)
+            self.assertIn("0 step(s) passed, 1 failed", out)
+            self.assertEqual(len([c for c in tl.calls().splitlines() if c.startswith("rocqchk")]), 1)
+
+    def test_empty_shared_library_and_library_io_failures_are_cached(self):
+        for rel in ("proofs/lib", "proofs/zlib/checksum_fuzzer/lib"):
+            for problem in ("empty", "io", "dep"):
+                with self.subTest(rel=rel, problem=problem), tree() as t:
+                    t.write(rel + "/Untrusted.vo", "a prebuilt library must not be used\n")
+                    if problem != "empty":
+                        t.write(rel + "/Base.v", "Definition one := 1.\n")
+                    h = facts.load(t.root).projects["zlib"].harnesses["checksum_fuzzer"]
+                    error = OSError("cannot read source") if problem == "io" else check.CheckError("rocq dep failed")
+                    libs = {}
+                    with mock.patch.object(check, "_compile_in_parallel", side_effect=error) as compile_, \
+                            mock.patch.object(check.shutil, "copy", wraps=shutil.copy) as copy_:
+                        if problem == "io":
+                            copy_.side_effect = error
+                        for _ in range(2):
+                            with self.assertRaises((check.CheckError, OSError)) as cm:
+                                check.compile_lib(t.root, h, t.path("_build/default"), self.d.name, libs, io.StringIO())
+                            self.assertIs(cm.exception, libs[rel])
+                            self.assertIn("holds no .v file" if problem == "empty" else str(error), str(cm.exception))
+                        self.assertEqual(compile_.call_count, 1 if problem == "dep" else 0)
+                        self.assertEqual(copy_.call_count, 0 if problem == "empty" else 1)
+                        if rel != "proofs/lib":
+                            self.assertEqual(libs["proofs/lib"], [], "an absent shared library has no mapping")
 
     @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
     def test_a_harness_library_is_compiled_once_and_is_on_every_load_path(self):

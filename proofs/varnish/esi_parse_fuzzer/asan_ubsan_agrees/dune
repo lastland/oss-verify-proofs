@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.varnish.esi_parse_fuzzer.asan_ubsan_agrees)
  (package rocq-oss-fuzz-theorems-varnish-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.varnish.esi_parse_fuzzer OssFuzzTheorems.Proofs.varnish.esi_parse_fuzzer.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.varnish.esi_parse_fuzzer OssFuzzTheorems.Proofs.varnish.esi_parse_fuzzer.lib))

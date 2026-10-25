@@ -5,7 +5,8 @@
 
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType Fs State Monad Specs Run.
-From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Lib Require Import PropExec MState Mem Exec ITree RelSpec Nodes PlacementSearch.
+From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Lib Require Import PropExec MState Mem Exec ITree RelSpec Nodes.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Lib Require Export Lps04.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Import ListNotations.

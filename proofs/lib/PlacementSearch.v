@@ -1,11 +1,15 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+(* Modified by Yao Li: extracted shared proofs from separate project libraries
+   in this repository. *)
 (* [comment removed for export] *)
 
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State.
-Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
+Local Unset Lia Cache.
+Local Unset Nia Cache.
+Local Unset Nra Cache.
 Import ListNotations.
 Open Scope bv_scope.
 
@@ -110,9 +114,9 @@ Proof.
     Hgfree.
   assert (Hmod : two_pow_64 = bv_modulus 64) by reflexivity.
   assert (HgW : bv_unsigned (Z_to_bv 64 g) = g)
-    by (rewrite Z_to_bv_unsigned; apply bv_wrap_small; clear - HaPos HnPos Hbase Hglo Hghi Hmod; lia).
+    by (rewrite Z_to_bv_unsigned; apply bv_wrap_small; lia).
   assert (HnW : bv_unsigned (Z_to_bv 64 nZ) = nZ)
-    by (rewrite Z_to_bv_unsigned; apply bv_wrap_small; clear - HaPos HnPos Hbase Hglo Hghi Hmod; lia).
+    by (rewrite Z_to_bv_unsigned; apply bv_wrap_small; lia).
   set (cs := List.filter (fun c => (c <=? g)%Z) (fit_candidates maps aZ nZ)).
   set (g' := fold_left Z.max cs (aZ + nZ)%Z).
   assert (Hcs : forall x, In x cs <->
@@ -128,7 +132,7 @@ Proof.
       rewrite Heq'. now left.
     - apply Hcs in Hin. exact (proj1 Hin). }
   assert (Hg'W : bv_unsigned (Z_to_bv 64 g') = g')
-    by (rewrite Z_to_bv_unsigned; apply bv_wrap_small; clear - HaPos HnPos Hbase Hglo Hghi Hmod Hlo Hhi; lia).
+    by (rewrite Z_to_bv_unsigned; apply bv_wrap_small; lia).
   assert (Hg'Al : (g' mod page_size = 0)%Z).
   { destruct Hcand as [Heq|Hin].
     - rewrite <- Heq.
@@ -208,7 +212,7 @@ Proof.
       [|reflexivity].
     exfalso.
     rewrite (higher_fit_b_complete maps aZ nZ baseZ g
-               ltac:(clear - HaPos HnPos; lia) HnPos HaAl HnAl Hbase HgAl Hglo Hghi Hfree)
+               ltac:(lia) HnPos HaAl HnAl Hbase HgAl Hglo Hghi Hfree)
       in Hf.
     discriminate.
   - intro H. destruct (higher_fit_b maps aZ nZ baseZ) eqn:Hf;

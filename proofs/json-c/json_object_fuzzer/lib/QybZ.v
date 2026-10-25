@@ -15,7 +15,7 @@ Import Stdlib.ZArith.ZArith Stdlib.Lists.List Stdlib.Bool.Bool Stdlib.micromega.
 Import LinuxProcessSemantics.LinuxProcessSem.BvBase LinuxProcessSemantics.LinuxProcessSem.State LinuxProcessSemantics.LinuxProcessSem.StackLayout LinuxProcessSemantics.LinuxProcessSem.Run.
 Import LinuxProcessSemantics.LinuxProcessSem.Sys.Syscall LinuxProcessSemantics.LinuxProcessSem.Sys.Uapi.
 Import LinuxProcessSemantics.LinuxProcessSem.Sys.Mm.Mmap.
-Import Qg4E.Mq0.
+Import OssFuzzTheorems.Proofs.Shared.PlacementSearch.
 Import ListNotations.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Open Scope Z_scope.
@@ -177,4 +177,3 @@ to_wexit_ch ms bufs code.
 Hypothesis Hfd32 : fd32 fd = fd.
 
 End WithSegsCh.
-

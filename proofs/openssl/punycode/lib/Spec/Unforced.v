@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType Fs State Specs Run.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
@@ -80,16 +81,9 @@ Proof.
 Qed.
 
 (* [comment removed for export] *)
-Lemma vm_round_up_aligned : forall z, (page_round_up_Z z mod page_size = 0)%Z.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
 
-Lemma vm_round_up_ge : forall z, (z <= page_round_up_Z z)%Z.
-Proof.
-  intro z. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-  pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)).
-  lia.
-Qed.
+
+
 
 Lemma round_up_le_4095 : forall z, 0 <= z -> page_round_up_Z z <= z + 4095.
 Proof.
@@ -130,13 +124,13 @@ Section Gap.
       set (B := bv_unsigned b) in *. set (S := bv_unsigned s) in *.
       pose proof (bv_unsigned_in_range 64 b) as RB. pose proof (bv_unsigned_in_range 64 s) as RS.
       set (c' := page_round_up_Z (B + S)).
-      pose proof (vm_round_up_ge (B + S)) as Hge.
+      pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (B + S)) as Hge.
       assert (Hle : c' <= B + S + 4095) by (apply round_up_le_4095; lia).
       assert (Hlive : live_at c (b, s) = true) by (unfold live_at; cbn; apply Z.ltb_lt; lia).
       assert (Hdead : live_at c' (b, s) = false) by (unfold live_at; cbn; apply Z.ltb_ge; lia).
       destruct (live_weight_step nZ L c c' b s HnZ ltac:(lia) Hin Hlive Hdead) as [Hws Hlen].
       exists c'. split; [|exact Hlen].
-      split; [apply vm_round_up_aligned|].
+      split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|].
       split; lia.
   Qed.
 

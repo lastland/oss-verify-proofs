@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Lib Require TermBlob.
 #[local] Ltac2 tbs__ () := ["@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw.Safety"; "assn"; "world"; "etriple"; "triple"; "w_cfg"; "@Corelib.Init.Datatypes"; "list"; "fst"; "prod"; "pair"; "snd"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymState"; "sstate"; "valuation"; "@Corelib.Init.Logic"; "and"; "True"; "False"; "eq"; "iff"; "or"; "@LinuxProcessSemantics.LinuxProcessSem.State"; "Model"; "event"; "@Corelib.Numbers.BinNums"; "Z"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymSummary"; "jpost"; "LQP"; "@Stdlib.ZArith.BinInt.Z"; "le"; "add"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Malloc.TRRulesK.Angelic"; "roomw"; "posts_room"; "TR_ang"; "jroom"; "proom"; "@Corelib.Lists.ListDef"; "map"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Malloc.ContractDrv"; "vm_room"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Malloc.TRRulesK"; "tr_rules"; "implJ"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymSoundR"; "SPJ"; "ok_frameJ"; "@LinuxProcessSemantics.LinuxProcessSem.Run"; "cfg_model"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymCall"; "ok_pframeJ"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Malloc.Contract"; "ok_sideK"].
 #[local] Ltac2 tb__ s := OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Lib.TermBlob.dec2 (tbs__ ()) s.
@@ -268,7 +269,7 @@ Proof using .
       intros w [HsmW [HJw HRw]]. split; [split; [exact HsmW | exact HJw] | exact HRw].
   -
     intros k kf ko J Jf Jo S rho Q _ Hi H17 HP _ Hok Hko Hk H32. specialize (Hok I).
-    pose proof (FreeGap.page_round_up_Z_ge (bv_unsigned (eval rho (reg_sv S 11)))) as Hge.
+    pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (bv_unsigned (eval rho (reg_sv S 11)))) as Hge.
     pose proof (urange (eval rho (reg_sv S 11))) as Hu.
     assert (Hn0 : 0 <= mmap_nZ (eval rho (reg_sv S 11))) by (unfold mmap_nZ; lia).
     split; [lia|]. intros r Hr.

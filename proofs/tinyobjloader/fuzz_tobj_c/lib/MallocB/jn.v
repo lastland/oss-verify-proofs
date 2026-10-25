@@ -7,7 +7,8 @@ From stdpp Require bitvector.
 From LinuxProcessSemantics.LinuxProcessSem Require BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Prelude Instr Decode DecodeC Sem.
 From OssFuzzTheorems.tinyobjloader.fuzz_tobj_c.images Require AsanUbsan.
-From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require DepotCall RefillBits je jm.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocA Require RefillBits.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require DepotCall je jm.
 
 (* [comment removed for export] *)
 Module DepotCallS.
@@ -740,7 +741,8 @@ From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require SpineM
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ig.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require m8.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ip.
-From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillModel RefillBits.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocA Require RefillBits.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillModel.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ia.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillTR RefillJ.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ii.
@@ -750,7 +752,7 @@ From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require jc.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require jd.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ji.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require je.
-Import OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i4.GlueMA OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i0.CertStackFree OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i1.CertStackMalloc OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i5.CertMallocS1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.CertMallocSP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i0.GlueMC OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.SpineMallocI OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ig.SpineMallocS1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.m8.SpineMallocS2 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ip.SpineMallocS3 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillModel OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillBits OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ia.CertMallocSR OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillTR OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillJ OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ii.RefillJP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.it.SpineMallocR1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.io.SpineMallocR2 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.jc.SpineMallocR3 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.jd.SpineMallocR8 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ji.SpineMallocR9 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.je.SpineMallocR10.
+Import MallocB.i4.GlueMA MallocB.i0.CertStackFree MallocB.i1.CertStackMalloc MallocB.i5.CertMallocS1 MallocB.CertMallocSP MallocB.i0.GlueMC MallocB.SpineMallocI MallocB.ig.SpineMallocS1 MallocB.m8.SpineMallocS2 MallocB.ip.SpineMallocS3 MallocB.RefillModel MallocA.RefillBits MallocB.ia.CertMallocSR MallocB.RefillTR MallocB.RefillJ MallocB.ii.RefillJP MallocB.it.SpineMallocR1 MallocB.io.SpineMallocR2 MallocB.jc.SpineMallocR3 MallocB.jd.SpineMallocR8 MallocB.ji.SpineMallocR9 MallocB.je.SpineMallocR10.
 Import ListNotations.
 Close Scope bv_scope.
 Open Scope Z_scope.
@@ -1570,4 +1572,3 @@ Proof.
 Qed.
 End INST.
 End SpineMallocSec3IELW2.
-

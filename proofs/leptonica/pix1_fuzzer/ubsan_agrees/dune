@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.leptonica.pix1_fuzzer.ubsan_agrees)
  (package rocq-oss-fuzz-theorems-leptonica-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.leptonica.pix1_fuzzer OssFuzzTheorems.Proofs.leptonica.pix1_fuzzer.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.leptonica.pix1_fuzzer OssFuzzTheorems.Proofs.leptonica.pix1_fuzzer.lib))

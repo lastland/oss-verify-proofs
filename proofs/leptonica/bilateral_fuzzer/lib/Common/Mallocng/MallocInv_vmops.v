@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import
   BvBase RiscvSemantics MemImageType StackLayout Fs State Monad Specs Run.
@@ -212,9 +213,7 @@ ltac2:(KReplay.run1 (kr_t_MallocInv_vmops ()) ["WithLayout"] "h04__x1h14__x2h21H
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
-Lemma page_round_up_Z_mod : forall z, page_round_up_Z z mod 4096 = 0.
-Proof.
-ltac2:(KReplay.run1 (kr_t_MallocInv_vmops ()) ["WithLayout"] "h07__arithh14__ffh28__varmaph35__with41zp;1p;2p;4p;7p;6p;3g008jj14Tg009Hj2;Tg00>Ej25Tg03`:j2GTg00J?j1>Tg00K?j1<Tg00L=j1:Tg00M9j17Tg00MWj16Tg00POj22Tg00_Xj48Tg00`Cj79Tg01Uaj6FTg00Q2j2ETg00QTj2DTg00Qnj2=Tg00?mj31Tg00RZj3?Tg00S9j4@Tg03`Wj3ATg03a8j1BTg034_j2CTg008Ej13Tf0R0#3#3p=0g00h0R1g00njR2#0#0#0#0#0#0#4R3,;0%42'5/G3g00oOR2#>%<2%:1%71%61R2g00fQR4g00g0R5P5g00gPR6P2P4P5P5P6P11213g01g3g00f3R5,21C8g00i5F9EF1E26P0f2R6g011FR2g011fR4'D1=06=124df19?15C@b1b2b3A1135g01gZ[P0b07A3%B0/C3=115eW4o"). Qed.
+
 
 Lemma grant_ok_vm_spec : forall h a n, grant_ok_vm h a n = true <->
   (u a mod 4096 = 0 /\ 0 < u a /\ u a + n <= alloc_top h /\

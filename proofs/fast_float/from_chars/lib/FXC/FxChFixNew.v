@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool FunctionalExtensionality.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Monad Run Specs.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
@@ -256,7 +257,7 @@ Proof. LiaFast.lf_pins (fun (Hsegb Hoff Hrespos Hreswf : LiaFast.U) => LiaFast.u
   assert (Hnz0 : w_is0 (Z_to_bv 64 len) = false) by (unfold w_is0, bv_eqb; apply Z.eqb_neq; rewrite fg64 by exact Hlen64; change (bv_unsigned (Z_to_bv 64 0)) with 0; lia).
   assert (HnZ : page_round_up_Z (bv_unsigned (Z_to_bv 64 len)) = n) by (rewrite fg64 by exact Hlen64; symmetry; exact Hlen).
   assert (HnZpos : 0 < n) by (rewrite <- HnZ; exact (len_nZ_pos _ Hnz0)).
-  assert (HnZal : n mod 4096 = 0) by (rewrite <- HnZ; exact (page_round_up_Z_aligned' _)).
+  assert (HnZal : n mod 4096 = 0) by (rewrite <- HnZ; exact (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned _)).
   assert (Hgj : In g (sm_maps M)) by exact (nth_error_In _ _ Hj).
   pose proof Hgsh as Hgsh0. rewrite Forall_forall in Hgsh0. destruct (Hgsh0 g Hgj) as (Gs1 & Gs2 & Gs3 & Gs4 & Gs5).
   pose proof Hgtop as Hgtop0. rewrite Forall_forall in Hgtop0. pose proof (Hgtop0 g Hgj) as Gt.

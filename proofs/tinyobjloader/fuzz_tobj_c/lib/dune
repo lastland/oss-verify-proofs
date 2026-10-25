@@ -4,4 +4,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib)
  (package rocq-oss-fuzz-theorems-tinyobjloader-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.tinyobjloader.fuzz_tobj_c))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.tinyobjloader.fuzz_tobj_c))

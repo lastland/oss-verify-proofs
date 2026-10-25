@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.ubsan_agrees)
  (package rocq-oss-fuzz-theorems-openssl-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.openssl.echconfiglist_parser OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.openssl.echconfiglist_parser OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib))

@@ -1,6 +1,7 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require Export ZBits.
 From OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib Require BvWfKernel.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import
@@ -1104,78 +1105,12 @@ destruct (Z.leb 0 k) eqn:Hk; injection H as <- <-.
 + apply Z.leb_le in Hk. nia.
 + apply Z.leb_gt in Hk. nia.
 Qed.
-Lemma testbit_mask : ltac2:(TCodec.tc2 tcn__AxSymExec3SoundK "Q2'Q9&]3zr2%3221&]8r3+R0%3221%8273'I'6&]B&]A&]@+2%2219r5%4231%6231r4%9221&4&]4%1274&]9%126C%5231%B3A71p0D1p0F1p0K1pn@Q01pnFQ11").
-Proof.
-intros j i Hj Hj64 Hi.
-assert (Heq : (2 ^ 64 - 2 ^ j)%Z = Z.shiftl (Z.ones (64 - j)) j).
-{ rewrite Z.shiftl_mul_pow2 by lia. unfold Z.ones. rewrite Z.shiftl_1_l.
-rewrite <- Z.sub_1_r, Z.mul_sub_distr_r, <- Z.pow_add_r by lia.
-replace (64 - j + j)%Z with 64%Z by lia. lia. }
-rewrite Heq.
-destruct (Z.lt_ge_cases i j) as [Hlt|Hge].
-- rewrite Z.shiftl_spec_low by lia. symmetry. apply andb_false_intro1. apply Z.leb_gt. lia.
-- rewrite Z.shiftl_spec_high by lia. rewrite Z.testbit_ones by lia.
-destruct (Z.lt_ge_cases i 64) as [Hi64|Hi64].
-+ replace (j <=? i)%Z with true by (symmetry; apply Z.leb_le; lia).
-replace (i <? 64)%Z with true by (symmetry; apply Z.ltb_lt; lia).
-apply andb_true_intro. split; [apply Z.leb_le; lia | apply Z.ltb_lt; lia].
-+ replace (i <? 64)%Z with false by (symmetry; apply Z.ltb_ge; lia). rewrite andb_false_r.
-apply andb_false_intro2. apply Z.ltb_ge. lia.
-Qed.
-Lemma land_align_mask : ltac2:(TCodec.tc2 tcn__AxSymExec3SoundK "Q4'Q9&]3zr1%3221&]8r2+R0%3221'Hr4%:291&]@+2%2217%:251%7251'I&];r5%827:%3221%53F1D&]2r6&]A%>2=7%22=1%5241%<3M15p081p0?1p0H1p0M1pnFQ21pQU<Q31").
-Proof.
-intros x j Hj Hj64 Hx Hmod.
-assert (Hx' : x = ((x / 2 ^ j) * 2 ^ j)%Z).
-{ pose proof (Z.div_mod x (2 ^ j) ltac:(apply Z.pow_nonzero; lia)) as Hdm. lia. }
-apply Z.bits_inj'. intros i Hi. rewrite Z.land_spec, testbit_mask by lia.
-destruct (Z.lt_ge_cases i j) as [Hlt|Hge].
-- replace (j <=? i)%Z with false by (symmetry; apply Z.leb_gt; lia).
-rewrite andb_false_r. rewrite Hx'. symmetry. apply Z.mul_pow2_bits_low. lia.
-- replace (j <=? i)%Z with true by (symmetry; apply Z.leb_le; lia).
-destruct (Z.lt_ge_cases i 64) as [Hi64|Hi64].
-+ replace (i <? 64)%Z with true by (symmetry; apply Z.ltb_lt; lia). apply andb_true_r.
-+ replace (i <? 64)%Z with false by (symmetry; apply Z.ltb_ge; lia). rewrite andb_false_r.
-symmetry. apply (Z_testbit_high 64 x i); lia.
-Qed.
+
+
 Section ZBits.
 Local Open Scope Z_scope.
-#[using="Type"] Lemma testbit_drop_low : ltac2:(TCodec.tc2 tcn__AxSymExec3SoundK "Q5'Q9&]3zr2%3221'Hr4%6251&]8&]@+2r3%3221%5271%9271%>294'I'6&]B&\O&]<r7r5%>2=1%4231r6%7221%921E%:24F%=3<21p0?1p0A1p0L1pn@Q11pnFQ21pQQ8Q31pQQ6Q41").
-Proof.
-intros q r j i Hj Hr Hi.
-replace i with ((i - j) + j) by lia.
-rewrite <- !Z.div_pow2_bits by lia.
-f_equal. rewrite Z.div_add_l by lia. rewrite (Z.div_small r) by lia.
-rewrite Z_div_mult by lia. lia.
-Qed.
-#[using="Type"] Lemma land_highmask : ltac2:(TCodec.tc2 tcn__AxSymExec3SoundK "Q0'Q9'H&]3zr1%3221&]8+R0%2241%8241r3%9281&]@+2%2217%9251%?251'I&]2r4&]A%928;%2281%5241&];%1264%6271%:3K41p0<1p0D1pnFN1pQU<O1").
-Proof.
-intros x j Hj Hx.
-assert (Hp : 0 < 2 ^ j) by (apply Z.pow_pos_nonneg; lia).
-pose proof (Z.div_mod x (2 ^ j) ltac:(lia)) as Hdm.
-pose proof (Z.mod_pos_bound x (2 ^ j) Hp) as Hmb.
-set (q := x / 2 ^ j) in *. set (r := x mod 2 ^ j) in *.
-replace (x - r) with (q * 2 ^ j) by lia. rewrite Hdm.
-replace (2 ^ j * q + r) with (q * 2 ^ j + r) by lia.
-apply Z.bits_inj'. intros i Hi. rewrite Z.land_spec.
-pose proof (testbit_mask j i ltac:(lia) ltac:(lia) ltac:(lia)) as Hmask.
-rewrite Hmask. destruct (Z.lt_ge_cases i j) as [Hij|Hij].
-- replace (j <=? i) with false by (symmetry; apply Z.leb_gt; lia). rewrite andb_false_r.
-symmetry. apply Z.mul_pow2_bits_low. lia.
-- replace (j <=? i) with true by (symmetry; apply Z.leb_le; lia).
-destruct (Z.lt_ge_cases i 64) as [Hi64|Hi64].
-+ replace (i <? 64) with true by (symmetry; apply Z.ltb_lt; lia). rewrite andb_true_r.
-apply testbit_drop_low; lia.
-+ replace (i <? 64) with false by (symmetry; apply Z.ltb_ge; lia). rewrite andb_false_r.
-assert (0 <= q) by (subst q; apply Z.div_pos; lia).
-assert (0 <= q * 2 ^ j < 2 ^ 64) by nia.
-destruct (Z.testbit (q * 2 ^ j) i) eqn:Ht; [|reflexivity]. exfalso.
-assert (Hb : forall n a, 0 <= n -> 0 <= a < 2 ^ n -> forall k, n <= k -> Z.testbit a k = false).
-{ intros n a Hn Ha k Hk. destruct (Z.testbit a k) eqn:E; [|reflexivity]. exfalso.
-apply Z.testbit_true in E; [|lia].
-assert (Hpk : 2 ^ n <= 2 ^ k) by (apply Z.pow_le_mono_r; lia).
-assert (Hsmall : a / 2 ^ k = 0) by (apply Z.div_small; lia). rewrite Hsmall in E. cbn in E. lia. }
-rewrite (Hb 64 (q * 2 ^ j)) in Ht by lia. discriminate.
-Qed.
+
+
 End ZBits.
 Lemma erange_f_sound : ltac2:(TCodec.tc2 tcn__AxSymExec3SoundK "QI';'QH%211'U2'aFyR0%211'>y8%511%311p051'V6%=11'<'U;'Q9&[Mr8r7r6r5%544321'I'A%1299%C11&U5r4%23891(3(@r3r2%34BB21%52:1%=3:71'H&]3&aK&TNr9%221E%42Q61%62@1%722=%9221p0;1p0J1pQQFQ11pQQNQ21pm:Q41pmJQ61po6Q81pV>Q;1pRJQD1pQRHQF1").
 Proof.

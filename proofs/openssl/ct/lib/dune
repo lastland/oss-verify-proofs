@@ -4,4 +4,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.openssl.ct.lib)
  (package rocq-oss-fuzz-theorems-openssl-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.openssl.ct))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.openssl.ct))

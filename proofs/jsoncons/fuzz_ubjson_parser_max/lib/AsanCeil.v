@@ -6,7 +6,7 @@ From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State StackLayout Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys Require Import Syscall Uapi.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
-From OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib Require Import PlacementSearch.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Import ListNotations.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Open Scope Z_scope.
@@ -58,12 +58,7 @@ Lemma init_sp_ok_same : ltac2:(TCodec.tc2 tcn__AsanCeil "B'D'9'R1yR0%211&Kr1%211
 Proof. intros h h' E H. unfold init_sp_ok in *. rewrite E. exact H. Qed.
 Lemma init_sp_ok_mkVmMapsFull : ltac2:(TCodec.tc2 tcn__AsanCeil "Q1'D'4'7'R1yR0%211%4211%611'@&Q3r8%211(Hr7r6r5r4r3r2&Kr9%211%:8<9876541%>11p0=1pSBD1pS<B1pRJF1pSNG1pSHF1pS@G1pSJH1pS4Q01").
 Proof. intros. unfold init_sp_ok in *. cbn. assumption. Qed.
-Lemma page_round_up_Z_ge_all : ltac2:(TCodec.tc2 tcn__AsanCeil "7'@&Q6r1&I%112%4231pT661").
-Proof.
-intros z. unfold page_round_up_Z, page_size.
-pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)) as Hr. lia.
-Qed.
+
 Lemma mmap_off_aligned_b_0 : ltac2:(TCodec.tc2 tcn__AsanCeil ":'9'0&N&R0yR0z%3221%511(8%93821").
 Proof. vm_compute. reflexivity. Qed.
 Lemma mmap_anon_b_of_core : ltac2:(TCodec.tc2 tcn__AsanCeil "H'R1yR0%211'@'9&Mr2%211r1%53621'0&Q9+5%2271(8%;3521&Lr4%211%?3915p051p0<1pRNC1pS2E1").
@@ -75,8 +70,7 @@ pose proof (Z.ldiff_spec (bv_unsigned flags) MAP_NORESERVE 5) as HD. rewrite Hc,
 change (Z.testbit MAP_ANONYMOUS 5) with true in HL. change (Z.testbit MAP_NORESERVE 5) with false in HD.
 destruct (Z.testbit (bv_unsigned flags) 5); discriminate.
 Qed.
-Lemma page_round_up_Z_aligned' : ltac2:(TCodec.tc2 tcn__AsanCeil ";'@'9&Q8&Ir1%211&J%5221z%83921pT6:1").
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 Lemma page_round_up_Z_pos' : ltac2:(TCodec.tc2 tcn__AsanCeil ";'@&Q7zr1%3221&Ir2%211%7261p051pT6:1").
 Proof. intros z Hz. pose proof (page_round_up_Z_ge z). lia. Qed.
 Definition zero_random_draw (rdraw : bv 128) : Prop := rdraw = Z_to_bv 128 0.

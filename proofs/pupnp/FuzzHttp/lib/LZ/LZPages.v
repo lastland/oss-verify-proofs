@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs Run.
 From OssFuzzTheorems.Proofs.pupnp.FuzzHttp.lib.Lib Require Import PropExec Decode.
@@ -17,11 +18,10 @@ Proof. intros w. pose proof (bv_unsigned_in_range 64 w) as H. unfold bv_modulus 
 Lemma u64_lit : forall z, 0 <= z < 2^64 -> bv_unsigned (Z_to_bv 64 z) = z.
 Proof. intros z Hz. rewrite Z_to_bv_unsigned. apply bv_wrap_small. unfold bv_modulus. lia. Qed.
 
-Lemma page_round_up_Z_aligned : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intros z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 
 Lemma lenZ_aligned : forall len, lenZ len mod page_size = 0.
-Proof. intros len. unfold lenZ. apply page_round_up_Z_aligned. Qed.
+Proof. intros len. unfold lenZ. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned. Qed.
 
 Lemma lenZ_nonneg : forall len, 0 <= lenZ len.
 Proof.

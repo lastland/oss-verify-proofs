@@ -4,7 +4,8 @@
 From OssFuzzTheorems.Proofs.cgif.cgif_file_fuzzer.lib Require YZ00.
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
-From OssFuzzTheorems.Proofs.cgif.cgif_file_fuzzer.lib Require Import YK06 YK10.
+From OssFuzzTheorems.Proofs.cgif.cgif_file_fuzzer.lib Require Import YK06.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Import ListNotations.
 Unset Lia Cache. Unset Nia Cache.
 Open Scope bv_scope.

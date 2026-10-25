@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from oft import facts, lint
+from oft import facts, lint, paths
 from oft.tests.helpers import REPO, Tree, rules_of, tree
 
 
@@ -26,6 +26,16 @@ class Clean(unittest.TestCase):
 
 
 class Paths(unittest.TestCase):
+    def test_shared_library_sources_and_generated_dune_each_have_one_owner(self):
+        for rel, cls in (("proofs/lib/dune", "gen"), ("proofs/lib/Base.v", "contrib"),
+                         ("proofs/lib/Sub/Deep.v", "contrib")):
+            with self.subTest(rel=rel):
+                matches = paths.classify(rel)
+                self.assertEqual(len(matches), 1, matches)
+                self.assertEqual((matches[0][0], matches[0][2]), (cls, {}))
+        self.assertEqual(paths.classify("proofs/lib/Sub/dune"), [])
+        self.assertEqual(paths.classify("proofs/lib/stray.txt"), [])
+
     def test_a_stray_path(self):
         with tree() as t:
             t.write("projects/zlib/checksum_fuzzer/scratch/x.log", "a stray file\n")
@@ -343,6 +353,23 @@ class ProofHarnessDirs(unittest.TestCase):
         found = [f for f in t.lint() if f.rule == "proofs"]
         self.assertEqual(len(found), 1)
         self.assertIn("lib/Sub/Cheat.v", str(found[0]))
+
+    def test_a_shared_library_is_allowed_and_not_a_project_or_proof_directory(self):
+        t = self.tree_with({"proofs/lib/Sub/Deep.v": "Definition two := 2.\n"})
+        self.assertEqual([str(f) for f in t.lint(changed=["proofs/lib/Sub/Deep.v", "proofs/lib/dune"],
+                                               pr_kind="contributor")], [])
+        loaded = facts.load(t.root)
+        self.assertEqual(loaded.errors, [])
+        self.assertTrue(loaded.shared_proof_lib)
+        self.assertNotIn("lib", loaded.projects)
+        self.assertEqual(loaded.proof_libs, [])
+        self.assertEqual(loaded.proofs, {})
+
+    def test_a_shared_library_is_held_to_the_proofs_rule(self):
+        t = self.tree_with({"proofs/lib/Sub/Cheat.v": "Lemma x : False.\nProof. Admitted.\n"})
+        found = [f for f in t.lint() if f.rule == "proofs"]
+        self.assertEqual(len(found), 1)
+        self.assertIn("proofs/lib/Sub/Cheat.v", str(found[0]))
 
     def test_licence_texts_and_recipe_are_verbatim_but_the_record_is_not(self):
         t = self.tree_with(dict(self.PROVENANCE, **{

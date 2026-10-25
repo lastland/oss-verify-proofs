@@ -8,7 +8,7 @@
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.AS Require AsanCeil.
-Import OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.AS.AsanCeil.PlacementSearch.
+Import OssFuzzTheorems.Proofs.Shared.PlacementSearch.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
   (* [comment removed for export] *)
 (* [comment removed for export] *)

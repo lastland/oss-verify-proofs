@@ -5,9 +5,11 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
-From OssFuzzTheorems.Proofs.openssl.hashtable.lib Require Import AsanCeil PlacementSearch.  (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.openssl.hashtable.lib Require Import AsanCeil.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.  (* [comment removed for export] *)
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Import ListNotations.
 Open Scope bv_scope.
@@ -145,7 +147,7 @@ Section Gap.
       apply andb_true_iff in Hov as [H1 H2]. apply Z.ltb_lt in H1. apply Z.ltb_lt in H2.
       set (B := bv_unsigned b) in *. set (S := bv_unsigned s) in *.
       set (c' := page_round_up_Z (B + S)).
-      pose proof (page_round_up_Z_ge (B + S)) as Hge.
+      pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (B + S)) as Hge.
       assert (Hle : c' <= B + S + 4095).
       { unfold c', page_round_up_Z, page_size.
         pose proof (Z.mul_div_le (B + S + 4096 - 1) 4096 ltac:(lia)). lia. }

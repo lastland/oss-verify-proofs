@@ -8,12 +8,12 @@ From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State StackLayout Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys Require Import Syscall Uapi.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
-From OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib.ABoot Require Import PlacementSearch.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Import ListNotations.
 Open Scope Z_scope.
 From OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib.Lib Require CDefT.
 From Ltac2 Require Ltac2.
-Ltac2 gd_tbl_AsanCeil () : Init.string Init.list := ["Corelib.Init.Logic.or"; "Stdlib.ZArith.BinInt.Z.le"; "bottomup_floor"; "RocqVerifyHarness.AgentSubmission.ABoot.PlacementSearch.no_higher_fit"; "Corelib.Init.Datatypes.app"; "Corelib.Init.Datatypes.prod"; "stdpp.bitvector.definitions.bv"; "LinuxProcessSemantics.LinuxProcessSem.State.vm_reserved"; "LinuxProcessSemantics.LinuxProcessSem.State.vm_maps"; "stdpp.bitvector.definitions.bv_unsigned"; "LinuxProcessSemantics.LinuxProcessSem.State.vm_mmap_base"; "Corelib.Init.Datatypes.orb"; "Stdlib.ZArith.BinInt.Z.leb"; "Corelib.Init.Datatypes.negb"; "RocqVerifyHarness.AgentSubmission.ABoot.PlacementSearch.higher_fit_b"; "LinuxProcessSemantics.LinuxProcessSem.State.VmMaps"; "Corelib.Numbers.BinNums.Z"; "Stdlib.ZArith.BinInt.Z.lt"; "Corelib.Init.Logic.eq"; "Stdlib.ZArith.BinInt.Z.modulo"; "LinuxProcessSemantics.LinuxProcessSem.State.page_size"; "Corelib.Init.Logic.iff"; "Corelib.Init.Datatypes.bool"; "placement_ok_b"; "Corelib.Init.Datatypes.true"; "placement_ok"; "Stdlib.ZArith.BinInt.Z.add"; "LinuxProcessSemantics.LinuxProcessSem.State.alloc_top"; "LinuxProcessSemantics.LinuxProcessSem.State.region_free"; "stdpp.bitvector.definitions.Z_to_bv"; "Corelib.Init.Logic.and"; "alloc_ceiling"; "Corelib.Init.Datatypes.list"; "LinuxProcessSemantics.LinuxProcessSem.State.ProcInput"; "LinuxProcessSemantics.LinuxProcessSem.Run.valid_sp"; "init_sp_ok"; "LinuxProcessSemantics.LinuxProcessSem.State.m_vmmaps"; "LinuxProcessSemantics.LinuxProcessSem.State.init_model"; "LinuxProcessSemantics.LinuxProcessSem.State.mkVmMapsFull"; "LinuxProcessSemantics.LinuxProcessSem.State.vm_init_sp"; "Corelib.Init.Datatypes.nat"; "Corelib.Init.Peano.lt"; "Corelib.Init.Datatypes.length"; "Corelib.Lists.ListDef.firstn"; "Corelib.Lists.ListDef.skipn"; "Corelib.Init.Datatypes.cons"; "Corelib.Lists.ListDef.nth"; "Corelib.Init.Datatypes.nil"].
+Ltac2 gd_tbl_AsanCeil () : Init.string Init.list := ["Corelib.Init.Logic.or"; "Stdlib.ZArith.BinInt.Z.le"; "bottomup_floor"; "OssFuzzTheorems.Proofs.Shared.PlacementSearch.no_higher_fit"; "Corelib.Init.Datatypes.app"; "Corelib.Init.Datatypes.prod"; "stdpp.bitvector.definitions.bv"; "LinuxProcessSemantics.LinuxProcessSem.State.vm_reserved"; "LinuxProcessSemantics.LinuxProcessSem.State.vm_maps"; "stdpp.bitvector.definitions.bv_unsigned"; "LinuxProcessSemantics.LinuxProcessSem.State.vm_mmap_base"; "Corelib.Init.Datatypes.orb"; "Stdlib.ZArith.BinInt.Z.leb"; "Corelib.Init.Datatypes.negb"; "OssFuzzTheorems.Proofs.Shared.PlacementSearch.higher_fit_b"; "LinuxProcessSemantics.LinuxProcessSem.State.VmMaps"; "Corelib.Numbers.BinNums.Z"; "Stdlib.ZArith.BinInt.Z.lt"; "Corelib.Init.Logic.eq"; "Stdlib.ZArith.BinInt.Z.modulo"; "LinuxProcessSemantics.LinuxProcessSem.State.page_size"; "Corelib.Init.Logic.iff"; "Corelib.Init.Datatypes.bool"; "placement_ok_b"; "Corelib.Init.Datatypes.true"; "placement_ok"; "Stdlib.ZArith.BinInt.Z.add"; "LinuxProcessSemantics.LinuxProcessSem.State.alloc_top"; "LinuxProcessSemantics.LinuxProcessSem.State.region_free"; "stdpp.bitvector.definitions.Z_to_bv"; "Corelib.Init.Logic.and"; "alloc_ceiling"; "Corelib.Init.Datatypes.list"; "LinuxProcessSemantics.LinuxProcessSem.State.ProcInput"; "LinuxProcessSemantics.LinuxProcessSem.Run.valid_sp"; "init_sp_ok"; "LinuxProcessSemantics.LinuxProcessSem.State.m_vmmaps"; "LinuxProcessSemantics.LinuxProcessSem.State.init_model"; "LinuxProcessSemantics.LinuxProcessSem.State.mkVmMapsFull"; "LinuxProcessSemantics.LinuxProcessSem.State.vm_init_sp"; "Corelib.Init.Datatypes.nat"; "Corelib.Init.Peano.lt"; "Corelib.Init.Datatypes.length"; "Corelib.Lists.ListDef.firstn"; "Corelib.Lists.ListDef.skipn"; "Corelib.Init.Datatypes.cons"; "Corelib.Lists.ListDef.nth"; "Corelib.Init.Datatypes.nil"].
 
 
 (* [comment removed for export] *)
@@ -84,12 +84,7 @@ Lemma init_sp_ok_mkVmMapsFull : ltac2:(CDefT.buildp (gd_tbl_AsanCeil ()) "Ph,$?.
 Proof. intros. unfold init_sp_ok in *. cbn. assumption. Qed.
 
 (* [comment removed for export] *)
-Lemma page_round_up_Z_ge_all : forall z, z <= page_round_up_Z z.
-Proof.
-  intros z. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-  pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)) as Hr. lia.
-Qed.
+
 
 (* [comment removed for export] *)
 Lemma mmap_off_aligned_b_0 : mmap_off_aligned_b (Z_to_bv 64 0) = true.
@@ -108,8 +103,7 @@ Proof.
 Qed.
 
 (* [comment removed for export] *)
-Lemma page_round_up_Z_aligned' : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 Lemma page_round_up_Z_pos' : forall z, 0 < z -> 0 < page_round_up_Z z.
 Proof. intros z Hz. pose proof (page_round_up_Z_ge z). lia. Qed.
 

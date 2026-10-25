@@ -2669,7 +2669,7 @@ Proof.
   destruct (Z.lt_ge_cases i 4) as [Hi4|Hi4].
   - replace 48%Z with (Z.shiftl 3 4)%Z by reflexivity.
     rewrite Z.shiftl_spec_low by lia. apply andb_false_r.
-  - rewrite (Z_testbit_high 4 d i) by lia. reflexivity.
+  - rewrite (OssFuzzTheorems.Proofs.Shared.ZBits.Z_testbit_high 4 d i) by lia. reflexivity.
 Qed.
 
 #[using="Type"] Lemma lor_small_add : forall d : Z, (0 <= d)%Z -> (d < 16)%Z ->

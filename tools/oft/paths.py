@@ -72,8 +72,9 @@ TABLE = [
     ("gen", "projects/{project}/{harness}/images/dune"),
     ("gen", "proofs/{project}/{harness}/{statement}/dune"),
     ("gen", "proofs/{project}/{harness}/lib/dune"),
+    ("gen", "proofs/lib/dune"),
     # contrib
-    ("contrib", "proofs/lib/**"),
+    ("contrib", "proofs/lib/**/*.v"),
     ("contrib", "proofs/{project}/{harness}/{statement}/*.v"),
     ("contrib", "proofs/{project}/{harness}/{statement}/proof.yaml"),
     ("contrib", "proofs/{project}/{harness}/{statement}/classifier/**"),

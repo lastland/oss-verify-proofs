@@ -1,6 +1,7 @@
 (* Machine-generated data computed from the task's compiled program image (decoder-built tables and encoded data blocks); may contain fragments of third-party object code - see NOTICE. No Anthropic licence header applies to this file. *)
 
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Lib Require TermBlob.
 #[local] Ltac2 tbs__ () := ["@Corelib.Init.Logic"; "eq"; "and"; "ex"; "iff"; "not"; "or"; "False"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymState"; "sv"; "valuation"; "sobj"; "sprop"; "sstate"; "eval"; "holds"; "reg_sv"; "SLit"; "obj_range"; "ss_facts"; "ss_next"; "smatch"; "ss_objs"; "ss_pc"; "soff"; "cell"; "outside_all"; "mem_match"; "sfcsr"; "swf"; "rm"; "ss_fcsr"; "ss_fregs"; "ss_regs"; "ss_resv"; "agree_below"; "ob_base"; "obj_holds"; "pairwise_disjoint"; "ranges_disjoint"; "ob_hi"; "ob_lo"; "rd_bytes"; "sv_eqb"; "covered"; "mkSS"; "rl"; "sprop_below"; "ss_lenient"; "SVar"; "mkObj"; "rw"; "sprop_eqb"; "DUnknown"; "SPUle"; "c_off"; "c_val"; "c_width"; "enc_bytes"; "mkCell"; "ob_cells"; "ob_dflt"; "ro_addr"; "sv_below"; "DList"; "SPNot"; "ext_low"; "image_byte"; "mkVal"; "obj_hi_of"; "obj_lo_of"; "odefault"; "rd"; "@Corelib.Numbers.BinNums"; "Z"; "positive"; "@Corelib.Init.Datatypes"; "list"; "option"; "prod"; "Some"; "bool"; "pair"; "app"; "true"; "nat"; "length"; "nil"; "cons"; "false"; "andb"; "None"; "negb"; "fst"; "snd"; "@Stdlib.ZArith.BinInt.Z"; "le"; "add"; "lt"; "pow"; "of_nat"; "opp"; "modulo"; "eqb"; "to_nat"; "sub"; "ltb"; "@LinuxProcessSemantics.LinuxProcessSem.State"; "event"; "Model"; "FdEntry"; "fd_lookup"; "ExitEv"; "FdChannel"; "WriteEv"; "m_fds"; "m_fs"; "page_round_up_Z"; "cstr_result"; "fd_insert"; "CstrOk"; "CstrTooLong"; "iv_overlap"; "read_cstr_aux"; "@stdpp.bitvector.definitions"; "bv"; "Z_to_bv"; "bv_unsigned"; "bv_sub"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw.Safety"; "world"; "triple"; "assn"; "etriple"; "triple1"; "w_cfg"; "w_tr"; "model_idle"; "@Corelib.Lists.ListDef"; "Forall"; "map"; "nth"; "firstn"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymSoundR"; "SPJ"; "jpred"; "SP"; "ok_frame"; "ok_frameJ"; "@LinuxProcessSemantics.LinuxProcessSem.Run"; "config"; "mkCfg"; "cfg_ms"; "@LinuxProcessSemantics.LinuxProcessSem.RiscvSemantics"; "machine_state"; "ms_mem"; "ms_rom"; "Build_machine_state"; "find_segment"; "ms_fcsr"; "ms_fregs"; "ms_pc_val"; "ms_regs"; "ms_resv"; "ms_svc_pending"; "@LinuxProcessSemantics.Riscv.Instr"; "instr"; "Ecall"; "BC_EQ"; "BC_LTU"; "BC_NE"; "@Corelib.Init.Peano"; "le"; "lt"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.Glue3.WithSegs"; "diffs_ok"; "svs_diff"; "win"; "cell_sem_eq"; "list_eqb"; "objs_diff"; "sv_diff1"; "win1"; "win_bytes_in_frame"; "with_facts"; "cells_diff"; "list_obj"; "osv_diff"; "osv_eqb"; "same_but_objs"; "sfcsr_diff"; "sfcsr_eqb"; "state_diff"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.Glue3"; "set_rm"; "obj_rng"; "diffs_ok"; "same_but_objs"; "state_diff"; "with_facts"; "Kapp"; "with_mem"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymCall"; "smatch_pending"; "S_after"; "ok_pframe"; "ok_pframeJ"; "rho_set_rw"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymStep"; "instr_at"; "add_fact"; "@Stdlib.Lists.List"; "Forall2"; "forallb"; "In"; "filter"; "existsb"; "hd_error"; "nth_error"; "@LinuxProcessSemantics.LinuxProcessSem.MemImageType"; "Segment"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.Glue3.G2"; "S_after_write";
 "@LinuxProcessSemantics.LinuxProcessSem.Sys.Uaccess"; "rw_bytes_max"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw.SysStep"; "zero_range"; "after_sys"; "after_sys_mem"; "exit_code"; "@LinuxProcessSemantics.Riscv.Sem"; "branch_taken"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw3.SymExit"; "ok_halted"; "@Stdlib.PArith.BinPos.Pos"; "succ"; "@LinuxProcessSemantics.Riscv.Prelude"; "bv_eqb"; "@Stdlib.Arith.PeanoNat.Nat"; "ltb"].
@@ -82,19 +83,11 @@ Proof.
   pose proof (Z.mul_div_le (z + 4096 - 1) 4096 ltac:(lia)). lia.
 Qed.
 
-Lemma page_round_up_Z_le_bound : ltac2:(tb__ "0|0|
-S47S47S5bR2R1A2S0S47S61R2Z1000A2Z0A3S5bS6fR4A1R3A2F_;F_;Fb;Fz;").
-Proof.
-  intros z b Hz Hb. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod b 4096 ltac:(lia)) as E. rewrite Hb, Z.add_0_r in E.
-  set (q := b / 4096) in *.
-  assert (H : (z + 4096 - 1) / 4096 < q + 1) by (apply Z.div_lt_upper_bound; lia).
-  lia.
-Qed.
+
 
 Lemma page_round_up_Z_le_26 : ltac2:(tb__ "0|1|
 S47S5bR1Z4000000M0A2S5bS6fR2A1G0A2F_;Fz;").
-Proof. intros z Hz. apply page_round_up_Z_le_bound; [exact Hz | reflexivity]. Qed.
+Proof. intros z Hz. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_le; [exact Hz | reflexivity]. Qed.
 
 Lemma page_round_up_Z_pos : ltac2:(tb__ "0|0|
 S47S5dZ0R1A2S5bZ1000S6fR2A1A2F_;Fz;").

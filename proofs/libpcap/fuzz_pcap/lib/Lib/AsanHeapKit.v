@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
@@ -98,14 +99,14 @@ Section GapVar.
       apply andb_true_iff in Hov as [H1 H2]. apply Z.ltb_lt in H1. apply Z.ltb_lt in H2.
       set (B := bv_unsigned b) in *. set (S := bv_unsigned s) in *.
       set (c' := page_round_up_Z (B + S)).
-      pose proof (OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.Common.AsanHexScan__Common.AsanCeil.page_round_up_Z_ge_all (B + S)) as Hge.
+      pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (B + S)) as Hge.
       assert (Hle : c' <= B + S + 4095).
       { unfold c', page_round_up_Z, page_size. pose proof (Z.mul_div_le (B + S + 4096 - 1) 4096 ltac:(lia)). lia. }
       assert (Hlive : live_at c (b, s) = true) by (unfold live_at; cbn; apply Z.ltb_lt; lia).
       assert (Hdead : live_at c' (b, s) = false) by (unfold live_at; cbn; apply Z.ltb_ge; lia).
       destruct (live_weight_step nZ L c c' b s HnZ ltac:(lia) Hin Hlive Hdead) as [Hws Hlen].
       exists c'. split; [|exact Hlen].
-      split; [apply OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.Common.AsanHexScan__Common.AsanCeil.page_round_up_Z_aligned'|]. split; lia.
+      split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|]. split; lia.
   Qed.
 
   #[using="HnZ Hfloor Hceil"] Lemma scanV : forall k c, (length (List.filter (live_at c) L) <= k)%nat -> scan_invV c -> exists g, gap_atV g.

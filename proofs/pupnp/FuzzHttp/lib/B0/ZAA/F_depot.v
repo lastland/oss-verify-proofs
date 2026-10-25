@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require Import ZBits.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem Fpu.
@@ -121,7 +122,7 @@ Section PUT.
       cbn [firstn fold_left]. unfold mm_init. rewrite M64_eq. change (2^64) with 18446744073709551616.
       rewrite unsigned_lit; [reflexivity|].
       split; [apply Z.lxor_nonneg; split; intros; try lia; apply Z.mod_pos_bound; lia|].
-      apply (PropExec.Z_lxor_range); [apply Z.mod_pos_bound; lia| lia]. }
+      apply (OssFuzzTheorems.Proofs.Shared.ZBits.Z_lxor_range); [apply Z.mod_pos_bound; lia| lia]. }
     intros ms1 HP. destruct HP as (hv & x15 & x16 & -> & Hh). cbn beta in Hh.
 
     do 16 zstep.

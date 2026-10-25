@@ -4,6 +4,7 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Bool Lia Permutation.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
@@ -25,12 +26,10 @@ Proof.
   - destruct (IH lo n H) as (b' & s' & Hin & Hov). exists b', s'. split; [now right|exact Hov].
 Qed.
 
-Lemma page_up_ge : forall z, z <= page_round_up_Z z.
-Proof. intros z. unfold page_round_up_Z, page_size. pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)). pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)). lia. Qed.
+
 Lemma page_up_le : forall z, page_round_up_Z z <= z + 4095.
 Proof. intros z. unfold page_round_up_Z, page_size. pose proof (Z.mul_div_le (z + 4096 - 1) 4096 ltac:(lia)). lia. Qed.
-Lemma page_up_aligned : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intros z. unfold page_round_up_Z, page_size. rewrite Z.mul_comm, Z.mul_mod; [reflexivity| lia]. Qed.
+
 
 (* [comment removed for export] *)
 (* [comment removed for export] *)
@@ -158,12 +157,12 @@ Section Gap.
       apply andb_true_iff in Hov as [H1 H2]. apply Z.ltb_lt in H1. apply Z.ltb_lt in H2.
       set (B := bv_unsigned b) in *. set (S := bv_unsigned s) in *.
       set (c' := page_round_up_Z (B + S)).
-      pose proof (page_up_ge (B + S)) as Hge. pose proof (page_up_le (B + S)) as Hle. fold c' in Hge, Hle.
+      pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (B + S)) as Hge. pose proof (page_up_le (B + S)) as Hle. fold c' in Hge, Hle.
       assert (Hlive : live_at c (b, s) = true) by (unfold live_at; cbn; apply Z.ltb_lt; lia).
       assert (Hdead : live_at c' (b, s) = false) by (unfold live_at; cbn; apply Z.ltb_ge; lia).
       destruct (live_weight_step nZ L c c' b s HnZ ltac:(lia) Hin Hlive Hdead) as [Hws Hlen].
       exists c'. split; [|exact Hlen].
-      split; [apply page_up_aligned|]. split; lia.
+      split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|]. split; lia.
   Qed.
 
   Lemma scan : forall k c, (length (List.filter (live_at c) L) <= k)%nat -> scan_inv c -> exists g, gap_at g.

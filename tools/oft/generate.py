@@ -297,27 +297,42 @@ def proof_dune(tree, sid):
     lib = (" " + names.rocq_proof(p, hn, "lib")) if "%s/%s" % (p, hn) in tree.proof_libs else ""
     return _t("proof-dune.tmpl", "file", rocq=names.rocq_proof(p, hn, s),
               package=names.opam_package(p) + "-proofs",
-              theories=PROOF_THEORY_DEPS + " " + names.rocq_harness(p, hn) + lib) + "\n"
+              theories=_proof_theory_deps(tree) + " " + names.rocq_harness(p, hn) + lib) + "\n"
 
 
-def proof_lib_dune(p, hn):
+def _proof_theory_deps(tree):
+    return PROOF_THEORY_DEPS + (" " + names.SHARED_PROOF_THEORY if tree.shared_proof_lib else "")
+
+
+def proof_lib_dune(tree, p, hn):
     return _t("proof-dune.tmpl", "lib", rocq=names.rocq_proof(p, hn, "lib"),
-              package=names.opam_package(p) + "-proofs",
-              theories=PROOF_THEORY_DEPS + " " + names.rocq_harness(p, hn)) + "\n"
+              package=names.opam_package(p) + "-proofs", scope="of this harness",
+              theories=_proof_theory_deps(tree) + " " + names.rocq_harness(p, hn)) + "\n"
+
+
+def shared_proof_lib_dune():
+    return _t("proof-dune.tmpl", "lib", rocq=names.SHARED_PROOF_THEORY,
+              package=names.SHARED_PROOF_PACKAGE, scope="shared by every harness",
+              theories=PROOF_THEORY_DEPS) + "\n"
 
 
 def dune_project(tree):
     T = "dune-project.tmpl"
     pk = []
+    core = "rocq-oss-fuzz-theorems-core"
     for proj in sorted(tree.available(), key=lambda p: p.name):
         if "assets" not in proj.data:
             continue                    # every binary withheld: nothing to build, so no package
         pk.append(_t(T, "package", name=names.opam_package(proj.name),
-                     synopsis="Theorem statements about %s's OSS-Fuzz harnesses" % proj.name))
+                     synopsis="Theorem statements about %s's OSS-Fuzz harnesses" % proj.name, depends=core))
+    if tree.shared_proof_lib:
+        pk.append(_t(T, "package", name=names.SHARED_PROOF_PACKAGE,
+                     synopsis="Shared helpers for proofs of OSS-Fuzz theorem statements", depends=core))
     with_proofs = sorted({sid.split("/")[0] for sid in tree.proofs} | {u.split("/")[0] for u in tree.proof_libs})
     for p in with_proofs:
         pk.append(_t(T, "package", name=names.opam_package(p) + "-proofs",
-                     synopsis="Proofs of statements about %s's OSS-Fuzz harnesses" % p))
+                     synopsis="Proofs of statements about %s's OSS-Fuzz harnesses" % p,
+                     depends=core + (" " + names.SHARED_PROOF_PACKAGE if tree.shared_proof_lib else "")))
     r = tree.release
     rv = r["rocq"]["version"].split(".")
     return _t(T, "file", packages=("\n" + "\n\n".join(pk)) if pk else "", rocq_min="%s.%s" % (rv[0], rv[1]),
@@ -1068,7 +1083,9 @@ def render_all(tree):
         out[os.path.join(pd.path, "dune")] = proof_dune(tree, sid)
     for unit in tree.proof_libs:
         p, _, hn = unit.partition("/")
-        out[os.path.join("proofs", p, hn, "lib", "dune")] = proof_lib_dune(p, hn)
+        out[os.path.join("proofs", p, hn, "lib", "dune")] = proof_lib_dune(tree, p, hn)
+    if tree.shared_proof_lib:
+        out[os.path.join("proofs", "lib", "dune")] = shared_proof_lib_dune()
     return out
 
 

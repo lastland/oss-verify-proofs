@@ -287,12 +287,12 @@ Proof.
                  bv_unsigned (AX2.edenot E (AX2.EAlu Instr.ALU_AND a b)) = (Z.land (x mod 2^64) (y mod 2^64)) mod 2^64).
       { intros x' y' Ea Eb. cbn [AX2.edenot]. rewrite AX2S.u_and64, (IHa x' Ea), (IHb y' Eb). rewrite (Z.mod_small (Z.land _ _)); [reflexivity|].
         pose proof (Z.mod_pos_bound x' (2^64) ltac:(lia)). pose proof (Z.mod_pos_bound y' (2^64) ltac:(lia)).
-        apply AS.PropExec.Z_land_range; lia. }
+        apply ZBits.Z_land_range; lia. }
       destruct (leafv a) as [x|] eqn:Ea.
       * destruct (leafv b) as [y|] eqn:Eb.
         -- injection H as <-. destruct (leafv_sound a x Ea) as [Ha Ra]. destruct (leafv_sound b y Eb) as [Hb Rb].
            cbn [AX2.edenot]. rewrite AX2S.u_and64, Ha, Hb. rewrite Z.mod_small; [reflexivity|].
-           apply AS.PropExec.Z_land_range; lia.
+           apply ZBits.Z_land_range; lia.
         -- destruct (zev a) as [x'|]; [| discriminate]. destruct (zev b) as [y'|]; [| discriminate]. injection H as <-. apply G; reflexivity.
       * destruct (zev a) as [x'|]; [| discriminate]. destruct (zev b) as [y'|]; [| discriminate]. injection H as <-. apply G; reflexivity.
   - destruct op; try discriminate.

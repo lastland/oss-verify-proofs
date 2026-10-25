@@ -6,68 +6,7 @@ From OssFuzzTheorems.Proofs.glaze.binary_reflection.lib Require WdZS.
 (* [comment removed for export] *)
 Require Stdlib.ZArith.ZArith Stdlib.Lists.List Stdlib.Bool.Bool Stdlib.micromega.Lia LinuxProcessSemantics.LinuxProcessSem.BvBase LinuxProcessSemantics.LinuxProcessSem.State.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
-Module PlacementSearch.
-(* [comment removed for export] *)
-
-Import Stdlib.ZArith.ZArith Stdlib.Lists.List Stdlib.Bool.Bool Stdlib.micromega.Lia.
-Import LinuxProcessSemantics.LinuxProcessSem.BvBase LinuxProcessSemantics.LinuxProcessSem.State.
-Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
-Import ListNotations.
-Open Scope bv_scope.
-
-
-(* [comment removed for export] *)
-Definition fit_candidates (maps : list (word * word)) (aZ nZ : Z)
-    : list Z :=
-  (aZ + nZ)%Z
-    :: map (fun p => page_round_up_Z (bv_unsigned (fst p)
-                                      + bv_unsigned (snd p))%Z)
-           maps.
-
-Definition higher_fit_b (maps : list (word * word)) (aZ nZ baseZ : Z)
-    : bool :=
-  existsb (fun g => (g mod page_size =? 0)%Z
-                    && (aZ + nZ <=? g)%Z && (g + nZ <=? baseZ)%Z
-                    && region_free maps (Z_to_bv 64 g) (Z_to_bv 64 nZ))
-          (fit_candidates maps aZ nZ).
-
-Lemma page_round_up_Z_aligned : forall z,
-  (page_round_up_Z z mod page_size = 0)%Z.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
-
-Lemma page_round_up_Z_ge : forall z, (z <= page_round_up_Z z)%Z.
-Proof.
-  intro z. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-  pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)).
-  lia.
-Qed.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-End PlacementSearch.
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 Require LinuxProcessSemantics.LinuxProcessSem.StackLayout LinuxProcessSemantics.LinuxProcessSem.Run LinuxProcessSemantics.LinuxProcessSem.Sys.Syscall LinuxProcessSemantics.LinuxProcessSem.Sys.Uapi LinuxProcessSemantics.LinuxProcessSem.Sys.Mm.Mmap.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Module AsanCeil.
@@ -155,8 +94,7 @@ Proof.
 Qed.
 
 (* [comment removed for export] *)
-Lemma page_round_up_Z_aligned' : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 Lemma page_round_up_Z_pos' : forall z, 0 < z -> 0 < page_round_up_Z z.
 Proof. intros z Hz. pose proof (page_round_up_Z_ge z). lia. Qed.
 
@@ -1004,7 +942,5 @@ Proof.
   intros lo hi m Hlh (Wm & Wn & Wl & Wsp). unfold model_ivs_wf. model_proj.
   repeat split; try assumption. apply maps_subtract_wf; assumption.
 Qed.
-
-
 
 

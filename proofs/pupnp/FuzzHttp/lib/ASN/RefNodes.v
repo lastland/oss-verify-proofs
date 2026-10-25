@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
@@ -888,4 +889,3 @@ Lemma file_read_length_le : forall data (off count : word),
   (length (file_read data off count) <= word_to_nat count)%nat
   /\ (length (file_read data off count) <= length data - word_to_nat off)%nat.
 Proof. intros data off count. rewrite file_read_length_eq. split; lia. Qed.
-

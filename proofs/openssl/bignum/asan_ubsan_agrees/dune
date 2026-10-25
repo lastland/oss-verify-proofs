@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.openssl.bignum.asan_ubsan_agrees)
  (package rocq-oss-fuzz-theorems-openssl-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.openssl.bignum OssFuzzTheorems.Proofs.openssl.bignum.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.openssl.bignum OssFuzzTheorems.Proofs.openssl.bignum.lib))

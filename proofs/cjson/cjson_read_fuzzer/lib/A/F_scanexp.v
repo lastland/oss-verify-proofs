@@ -171,7 +171,7 @@ Proof.
   - rewrite Z.shiftl_mul_pow2 by lia.
     assert (0 <= Z.land v 65535 < 2^16)%Z.
     { split; [apply Z.land_nonneg; right; lia|].
-      apply PropExec.Z_bounded_by_bits; [lia | apply Z.land_nonneg; right; lia |].
+      apply ZBits.Z_bounded_by_bits; [lia | apply Z.land_nonneg; right; lia |].
       intros k Hk. rewrite Z.land_spec. replace 65535%Z with (Z.ones 16) by reflexivity.
       rewrite Z.testbit_ones_nonneg by lia. destruct (Z.ltb_spec0 k 16); [lia|]. apply Bool.andb_false_r. }
     change (2^64)%Z with (2^16 * 2^48)%Z. nia.

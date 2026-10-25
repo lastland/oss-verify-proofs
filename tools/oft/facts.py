@@ -26,6 +26,7 @@ class Tree:
         self.projects = {}
         self.proofs = {}           # statement id -> ProofDir
         self.proof_libs = []       # "<project>/<harness>" of every proofs/<p>/<h>/lib/
+        self.shared_proof_lib = False  # proofs/lib/ exists
         self.counterexamples = {}  # statement id -> CounterexampleDir
         self.errors = []
 
@@ -224,6 +225,7 @@ def _walk3(tree, top):
 
 
 def _load_contrib(tree):
+    tree.shared_proof_lib = os.path.isdir(tree.path("proofs", "lib"))
     for p, h, s, rel in _walk3(tree, "proofs"):
         y = os.path.join(rel, "proof.yaml")
         if not os.path.isfile(tree.path(y)):

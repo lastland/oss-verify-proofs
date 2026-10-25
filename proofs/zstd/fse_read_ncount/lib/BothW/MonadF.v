@@ -9,6 +9,7 @@ From OssFuzzTheorems.Proofs.zstd.fse_read_ncount.lib.Spec Require Import Prelim 
 From OssFuzzTheorems.Proofs.zstd.fse_read_ncount.lib.BothW Require Import BImg AProto.
 From OssFuzzTheorems.Proofs.zstd.fse_read_ncount.lib.LibA Require Import SysStepF.
 From OssFuzzTheorems.Proofs.zstd.fse_read_ncount.lib.Common Require Import RunDraw.
+From OssFuzzTheorems.Proofs.zstd.fse_read_ncount.lib.AsanW Require Export MonadF.
 Import ListNotations.
 Import ITree.Exc.
 (* [comment removed for export] *)
@@ -24,77 +25,6 @@ Local Ltac OssFuzzTheorems.Proofs.zstd.fse_read_ncount.lib.Lib.Tac.simpl_arr_siz
 
 Open Scope Z_scope.
 Section CANSEC1. Context {rc : runConstT}.
-Section ImplFLaws.
-Context {node : Type}.
-Variable segs : list Segment.
-Variable atn : node -> footprint -> machine_state -> Prop.
-Variable fst_ : node -> resp -> footprint -> footprint -> Prop.
-Local Notation implF := (@ITreeA.implF node segs atn fst_ _).
-#[using="Type"] Lemma implF_bind_cong : forall {A B} RNG (t : itree node A) (k1 k2 : A -> itree node B) (Q : B -> footprint -> machine_state -> Prop) ms,
-(forall r RNG' ms', implF RNG' (k1 r) Q ms' -> implF RNG' (k2 r) Q ms') ->
-implF RNG (ITree.bind node t k1) Q ms -> implF RNG (ITree.bind node t k2) Q ms.
-Proof.
-intros A B RNG t; revert RNG. induction t as [r|n k IH]; intros RNG k1 k2 Q ms HK H; cbn [ITree.bind] in *.
-- apply HK. exact H.
-- cbn in H |- *. eapply evtF_mono; [exact H|]. intros ms1 [Hat Hk]. split; [exact Hat|].
-intros rsp RNG' HF. eapply IH; [exact HK| apply Hk; exact HF].
-Qed.
-#[using="Type"] Lemma implF_bind_assoc : forall {A B C} RNG (t : itree node A) (g : A -> itree node B) (f : B -> itree node C) Q ms,
-implF RNG (ITree.bind node t (fun x => ITree.bind node (g x) f)) Q ms -> implF RNG (ITree.bind node (ITree.bind node t g) f) Q ms.
-Proof.
-intros A B C RNG t; revert RNG. induction t as [r|n k IH]; intros RNG g f Q ms H; cbn [ITree.bind] in *.
-- exact H.
-- cbn in H |- *. eapply evtF_mono; [exact H|]. intros ms1 [Hat Hk]. split; [exact Hat|].
-intros rsp RNG' HF. apply IH. apply Hk. exact HF.
-Qed.
-#[using="Type"] Lemma implF_bind_assoc_rev : forall {A B C} RNG (t : itree node A) (g : A -> itree node B) (f : B -> itree node C) Q ms,
-implF RNG (ITree.bind node (ITree.bind node t g) f) Q ms -> implF RNG (ITree.bind node t (fun x => ITree.bind node (g x) f)) Q ms.
-Proof.
-intros A B C RNG t; revert RNG. induction t as [r|n k IH]; intros RNG g f Q ms H; cbn [ITree.bind] in *.
-- exact H.
-- cbn in H |- *. eapply evtF_mono; [exact H|]. intros ms1 [Hat Hk]. split; [exact Hat|].
-intros rsp RNG' HF. apply IH. apply Hk. exact HF.
-Qed.
-Fixpoint tforall {A} (P : A -> Prop) (t : itree node A) : Prop :=
-match t with
-| ITree.Ret r => P r
-| Vis n k => forall x, tforall P (k x)
-end.
-#[using="Type"] Lemma tforall_bind : forall {A B} (P : A -> Prop) (P' : B -> Prop) (t : itree node A) (f : A -> itree node B),
-tforall P t -> (forall a, P a -> tforall P' (f a)) -> tforall P' (ITree.bind node t f).
-Proof.
-induction t as [r|n k IH]; intros f H Hf; cbn in *; [apply Hf; exact H|].
-intros x. apply IH; [apply H | exact Hf].
-Qed.
-#[using="Type"] Lemma implF_bind_ext2 : forall {A B C} RNG (P : A -> Prop) (t : itree node A) (f : A -> itree node B) (g : A -> itree node C) Q1 Q2 ms,
-tforall P t ->
-(forall a RNG' ms', P a -> implF RNG' (f a) Q1 ms' -> implF RNG' (g a) Q2 ms') ->
-implF RNG (ITree.bind node t f) Q1 ms -> implF RNG (ITree.bind node t g) Q2 ms.
-Proof.
-intros A B C RNG P t; revert RNG. induction t as [r|n k IH]; intros RNG f g Q1 Q2 ms HP HK H; cbn [ITree.bind tforall] in *.
-- apply HK; [exact HP| exact H].
-- cbn in H |- *. eapply evtF_mono; [exact H|]. intros ms1 [Hat Hk]. split; [exact Hat|].
-intros rsp RNG' HF. eapply IH; [apply HP| exact HK| apply Hk; exact HF].
-Qed.
-#[using="Type"] Lemma implF_bind_elim : forall {A B} RNG (P : A -> Prop) (t : itree node A) (h : A -> itree node B) Q1 Q2 ms,
-tforall P t ->
-(forall r RNG' ms', P r -> implF RNG' (h r) Q1 ms' -> evtF segs RNG' (Q2 r RNG') ms') ->
-implF RNG (ITree.bind node t h) Q1 ms -> implF RNG t Q2 ms.
-Proof.
-intros A B RNG P t; revert RNG. induction t as [r|n k IH]; intros RNG h Q1 Q2 ms HP Hh H; cbn [ITree.bind tforall] in *.
-- cbn. apply (Hh r); [exact HP | exact H].
-- cbn in H |- *. eapply evtF_mono; [exact H|]. intros ms1 [Hat Hk]. split; [exact Hat|].
-intros rsp RNG' HF. eapply IH; [apply HP | exact Hh | apply Hk; exact HF].
-Qed.
-#[using="Type"] Lemma implF_tforall : forall {A} RNG (P : A -> Prop) (t : itree node A) Q ms,
-tforall P t -> implF RNG t Q ms -> implF RNG t (fun a RNG' ms' => Q a RNG' ms' /\ P a) ms.
-Proof.
-intros A RNG P t; revert RNG. induction t as [r|n k IH]; intros RNG Q ms HP H; cbn [tforall] in *.
-- cbn in *. eapply evtF_mono; [exact H|]. cbn. intros ms' HQ. split; [exact HQ| exact HP].
-- cbn in H |- *. eapply evtF_mono; [exact H|]. intros ms1 [Hat Hk]. split; [exact Hat|].
-intros rsp RNG' HF. apply IH; [apply HP| apply Hk; exact HF].
-Qed.
-End ImplFLaws.
 Definition rng0 (RNG : footprint) : Prop := forall b, 0 <= b <= 2^64 -> rng RNG b 0.
 #[using="Type"] Lemma rng0_use : forall RNG b, rng0 RNG -> 0 <= b <= 2^64 -> rng RNG b 0.
 Proof. intros RNG b H Hb. exact (H b Hb). Qed.

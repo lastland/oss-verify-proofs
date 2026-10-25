@@ -4,4 +4,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib)
  (package rocq-oss-fuzz-theorems-cjson-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.cjson.cjson_read_fuzzer))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.cjson.cjson_read_fuzzer))

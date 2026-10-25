@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From stdpp Require Import bitvector.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
@@ -335,7 +336,7 @@ Proof.
   { unfold with_mmap_replacement, with_mmap_backing. rewrite G7.
     assert (Eu : bv_unsigned (Z_to_bv 64 nZ) = nZ).
     { apply u64_lit. pose proof (alloc_top_lt (m_vmmaps m)) as Hat0. unfold two_pow_64 in Hat0.
-      pose proof (u64_range addr). assert (0 <= nZ) by (unfold nZ; pose proof (page_round_up_Z_ge len); lia). lia. }
+      pose proof (u64_range addr). assert (0 <= nZ) by (unfold nZ; pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len); lia). lia. }
     rewrite Eu. apply Hfr. }
   unfold mmap_spec. rewrite G1, G2, G3, G4, G5, G6. cbn [negb]. rewrite Hlen. fold nZ. fold addr.
   rewrite G8.
@@ -584,7 +585,7 @@ Proof.
   assert (G11 : (0 <? bv_unsigned addr) = true) by (apply Z.ltb_lt; exact Ha0).
   assert (Eu : bv_unsigned (Z_to_bv 64 nZ) = nZ).
   { apply u64_lit. unfold two_pow_64 in Hat.
-    pose proof (u64_range addr). assert (0 <= nZ) by (unfold nZ; pose proof (page_round_up_Z_ge len); lia). lia. }
+    pose proof (u64_range addr). assert (0 <= nZ) by (unfold nZ; pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len); lia). lia. }
   assert (Hrepl : with_mmap_replacement flags addr (Z_to_bv 64 nZ)
                     (with_vmmaps (mmap_fixed_rw_next (m_vmmaps m) addr (Z_to_bv 64 nZ)) m)
                   = mmap_commit_model addr nZ m).

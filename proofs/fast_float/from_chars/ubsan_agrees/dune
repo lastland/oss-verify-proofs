@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.fast_float.from_chars.ubsan_agrees)
  (package rocq-oss-fuzz-theorems-fast_float-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.fast_float.from_chars OssFuzzTheorems.Proofs.fast_float.from_chars.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.fast_float.from_chars OssFuzzTheorems.Proofs.fast_float.from_chars.lib))

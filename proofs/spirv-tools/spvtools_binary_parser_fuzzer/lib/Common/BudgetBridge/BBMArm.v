@@ -1,6 +1,7 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From OssFuzzTheorems.Proofs.spirv_tools.spvtools_binary_parser_fuzzer.lib Require BvWfKernel.
 
 From Stdlib Require Import ZArith List Lia Bool.
@@ -25,8 +26,7 @@ Proof.
   cbn in H. apply andb_true_iff in H as [_ H]. exact (IH l2 lo n H).
 Qed.
 
-Lemma pru_mod : forall n, page_round_up_Z n mod page_size = 0.
-Proof. intros n. unfold page_round_up_Z. apply Z.mod_mul. unfold page_size. lia. Qed.
+
 
 Lemma mr_src_relim : forall L m old old_n z,
   mremap_source_b (m_vmmaps (relim L m)) old old_n z = mremap_source_b (m_vmmaps m) old old_n z.
@@ -129,7 +129,7 @@ Proof.
     assert (Hch : vm_backing_used (mremap_model_next m old on r nn) <= mremap_move_charge m old on nn).
     { apply charge_dst_le.
       - exact Halign.
-      - rewrite Hnn. apply pru_mod.
+      - rewrite Hnn. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned.
       - rewrite Hnn. unfold page_size in HnZp. lia.
       - rewrite Hnn. lia.
       - intros a sz Hin. exact (Hfit a sz (map_remove_In _ _ _ Hin)).

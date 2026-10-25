@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType Fs State Monad Specs Run.
 From LinuxProcessSemantics.Riscv Require Import Prelude Sem.
@@ -686,7 +687,7 @@ Proof.
   set (h := m_vmmaps mo) in *.
   pose proof (lenZ_nonneg len) as Hn0. change (lenZ len) with nZ in Hn0.
   change (lenZ len) with nZ in Hpess.
-  assert (HnZal : nZ mod page_size = 0) by (subst nZ; apply page_round_up_Z_aligned).
+  assert (HnZal : nZ mod page_size = 0) by (subst nZ; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   assert (D : forall o, syscall_spec (sys_input segs msF (Z_to_bv 64 222)) mo o <->
      mmap_spec (Z_to_bv 64 addr) (Z_to_bv 64 len) PR FL (Z_to_bv 64 (-1)) (Z_to_bv 64 0)
                (sys_input segs msF (Z_to_bv 64 222)) mo o).

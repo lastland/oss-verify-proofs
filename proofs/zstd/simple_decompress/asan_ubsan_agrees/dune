@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.zstd.simple_decompress.asan_ubsan_agrees)
  (package rocq-oss-fuzz-theorems-zstd-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.zstd.simple_decompress OssFuzzTheorems.Proofs.zstd.simple_decompress.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.zstd.simple_decompress OssFuzzTheorems.Proofs.zstd.simple_decompress.lib))

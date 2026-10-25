@@ -1353,7 +1353,7 @@ Proof using.
     stepb_tk F_5bfe4 D_5bfe4 ltac:(rwH; reflexivity).                    (* [comment removed for export] *)
     stepiv F_5c010 D_5c010 (Z_to_bv 64 (cap + 1))
       ltac:(gres; rwH; unfold v_andi; change (bv_wrap 64 (bv_signed (4094%bv : bv 12))) with (2 ^ 64 - 2 ^ 1)%Z;
-            rewrite AX2S.land_highmask by lia; f_equal; change (2 ^ 1)%Z with 2%Z; lia).   (* [comment removed for export] *)
+            rewrite ZBits.land_highmask by lia; f_equal; change (2 ^ 1)%Z with 2%Z; lia).   (* [comment removed for export] *)
     stepiv F_5c014 D_5c014 (Z_to_bv 64 cap)
       ltac:(gres; rwH; unfold v_addi; u_norm; imm_norm; f_equal; lia).  (* [comment removed for export] *)
     stepiv F_5c018 D_5c018 (Z_to_bv 64 1)

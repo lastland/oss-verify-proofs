@@ -6,6 +6,7 @@
 (* [comment removed for export] *)
 
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
@@ -1676,7 +1677,7 @@ Proof.
     rewrite Hlen. pose proof (page_round_up_Z_bounds lz ltac:(lia)) as PB. unfold page_size in PB.
     rewrite page_up_eq.
     split; [exact R11'|]. split; [unfold two64 in Hlz; lia|]. split; [reflexivity|]. split; [lia|]. split; [lia|].
-    split; [apply page_round_up_Z_aligned'|]. intros E' _ _. reflexivity.
+    split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|]. intros E' _ _. reflexivity.
   - destruct (xlo (kn cs) (reg cs 11)) as [lo|] eqn:Hxl; [|discriminate].
     destruct (xhi (kn cs) (reg cs 11)) as [hi|] eqn:Hxh; [|discriminate].
     match type of HML with (if ?c then _ else _) = _ => destruct c eqn:Hc; [|discriminate] end.
@@ -1707,7 +1708,7 @@ Proof.
           split; [rewrite R11; symmetry; apply Z_to_bv_bv_unsigned|].
           split; [unfold len in *; lia|]. split; [exact Hne|].
           split; [lia|]. split; [unfold len in *; lia|].
-          split; [apply page_round_up_Z_aligned'|].
+          split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|].
           intros E' _ Hag. symmetry. eapply edenot_agree'; [exact Hag | exact Hvl]. }
         destruct (xlo (kn cs) (page_up_e (kn cs) (reg cs 11))) as [a|] eqn:Hxa;
           [destruct (xhi (kn cs) (page_up_e (kn cs) (reg cs 11))) as [b|] eqn:Hxb|];
@@ -1721,7 +1722,7 @@ Proof.
         split; [rewrite R11; symmetry; apply Z_to_bv_bv_unsigned|].
         split; [unfold len in *; lia|]. split; [rewrite edenot_lit, Hpt; reflexivity|].
         split; [lia|]. split; [unfold len in *; lia|].
-        split; [apply page_round_up_Z_aligned'|].
+        split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|].
         intros E' _ _. reflexivity. }
     injection HML as <- <- <-.
     destruct (ealign_sound SEGS E _ (kn cs) (reg cs 11) HK) as [_ Hdiv].

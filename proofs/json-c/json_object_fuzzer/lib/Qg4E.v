@@ -7,102 +7,7 @@ From LinuxProcessSemantics.LinuxProcessSem Require BvBase State.
 From OssFuzzTheorems.Proofs.json_c.json_object_fuzzer.lib Require QU8l.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
-Module Mq0.
-
-Import Stdlib.ZArith.ZArith Stdlib.Lists.List Stdlib.Bool.Bool Stdlib.micromega.Lia.
-Import LinuxProcessSemantics.LinuxProcessSem.BvBase LinuxProcessSemantics.LinuxProcessSem.State.
-Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
-Import QU8l.Mq0.
-
-Local Ltac Z.euclidean_division_equations_cleanup ::= zify_cheap_cleanup. Local Ltac mkr__euclidean_division_equations_cleanup_0 := zify_cheap_cleanup.
-Local Ltac Zify.zify_internal_to_euclidean_division_equations ::= zify_fast_euclid. Local Ltac mkr__zify_internal_to_euclidean_division_equations_1 := zify_fast_euclid.
-Local Ltac lia ::= lia_tuned. Local Ltac mkr__lia_2 := lia_tuned.
-Import ListNotations.
-Open Scope bv_scope.
-
-Definition no_higher_fit (maps : list (word * word)) (aZ nZ baseZ : Z)
-: Prop :=
-forall g : Z,
-(g mod page_size = 0)%Z ->
-(aZ + nZ <= g)%Z ->
-(g + nZ <= baseZ)%Z ->
-region_free maps (Z_to_bv 64 g) (Z_to_bv 64 nZ) = false.
-
-Definition fit_candidates (maps : list (word * word)) (aZ nZ : Z)
-: list Z :=
-(aZ + nZ)%Z
-:: map (fun p => page_round_up_Z (bv_unsigned (fst p)
-+ bv_unsigned (snd p))%Z)
-maps.
-
-Definition higher_fit_b (maps : list (word * word)) (aZ nZ baseZ : Z)
-: bool :=
-existsb (fun g => (g mod page_size =? 0)%Z
-&& (aZ + nZ <=? g)%Z && (g + nZ <=? baseZ)%Z
-&& region_free maps (Z_to_bv 64 g) (Z_to_bv 64 nZ))
-(fit_candidates maps aZ nZ).
-
-Lemma page_round_up_Z_le : forall z b,
-(z <= b)%Z -> (b mod page_size = 0)%Z -> (page_round_up_Z z <= b)%Z.
-Proof.
-intros z b Hzb Hb. unfold page_round_up_Z, page_size in *.
-pose proof (Z.div_mod b 4096 ltac:(lia)) as Hbm.
-assert (Hq : ((z + 4096 - 1) / 4096 < b / 4096 + 1)%Z)
-by (apply Z.div_lt_upper_bound; lia).
-apply Z.le_trans with (m := (b / 4096 * 4096)%Z); [|lia].
-apply Z.mul_le_mono_nonneg_r; lia.
-Qed.
-
-Definition search_candidates (maps : list (word * word)) (loZ : Z)
-: list Z :=
-loZ :: map (fun p => page_round_up_Z (bv_unsigned (fst p)
-+ bv_unsigned (snd p))%Z)
-maps.
-
-Definition place_fits (maps : list (word * word)) (loZ hiZ nZ : Z) (g : Z)
-: bool :=
-(g mod page_size =? 0)%Z && (loZ <=? g)%Z && (g + nZ <=? hiZ)%Z
-&& region_free maps (Z_to_bv 64 g) (Z_to_bv 64 nZ).
-
-Definition place (maps : list (word * word)) (loZ hiZ nZ : Z)
-: option Z :=
-find (place_fits maps loZ hiZ nZ) (search_candidates maps loZ).
-
-Definition place_in_model (h : VmMaps) (nZ : Z) : option Z :=
-place (vm_reserved h ++ vm_maps h) page_size (alloc_top h) nZ.
-
-Example place_accepts_a_negative_length :
-place_in_model (mkVmMaps [] [] 0 0 0) (-4096) = Some 4096%Z.
-Proof. vm_compute. reflexivity. Qed.
-
-Definition witness_ledger : list (word * word) :=
-[(Z_to_bv 64 4096, Z_to_bv 64 8192)].
-
-Definition demo_top : Z := alloc_top (mkVmMaps [] [] 0 0 0).
-
-Example place_skips_the_occupied_floor :
-place witness_ledger page_size demo_top 4096 = Some 12288%Z.
-Proof. vm_compute. reflexivity. Qed.
-
-Example place_complete_premises_are_satisfiable :
-(0 <= page_size)%Z /\ (0 < 4096)%Z
-/\ (page_size mod page_size = 0)%Z /\ (4096 mod page_size = 0)%Z
-/\ (demo_top < two_pow_64)%Z
-/\ (12288 mod page_size = 0)%Z /\ (page_size <= 12288)%Z
-/\ (12288 + 4096 <= demo_top)%Z
-/\ region_free witness_ledger (Z_to_bv 64 12288) (Z_to_bv 64 4096) = true.
-Proof.
-unfold page_size, demo_top, two_pow_64. rewrite alloc_top_mkVmMaps.
-repeat split; try (vm_compute; reflexivity); try lia.
-Qed.
-
-Definition full_ledger : list (word * word) :=
-[(Z_to_bv 64 4096, Z_to_bv 64 (demo_top - 4096))].
-
-Example place_finds_nothing_when_full :
-place full_ledger page_size demo_top 4096 = None.
-Proof. vm_compute. reflexivity. Qed.
-End Mq0.
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
@@ -222,4 +127,3 @@ ms_svc_pending := ms_svc_pending (init_machine_state segs init_pc ph init_sp ini
 ms_resv       := ms_resv (init_machine_state segs init_pc ph init_sp init_rnd nil nil uid hw); ms_fcsr := ms_fcsr (init_machine_state segs init_pc ph init_sp init_rnd nil nil uid hw);
 ms_mem        := overlay_argc_bytes init_sp argc base;
 ms_rom        := ms_rom (init_machine_state segs init_pc ph init_sp init_rnd nil nil uid hw) |}.
-

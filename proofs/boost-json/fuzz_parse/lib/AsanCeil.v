@@ -5,7 +5,7 @@ From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State StackLayout Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys Require Import Syscall Uapi.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
-From OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Lib Require Import PlacementSearch.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 From OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Lib Require Import Nd.
 Require Import OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Lib.CDef.
 Local Ltac2 zQ s := CDef.cdeft "37Corelib7Numbers7BinNums01Z37Corelib4Init5Logichc2eq6fOssFuzzTheorems6Proofsaboost_jsonafuzz_parse3lib8AsanCeilj5dalloc_ceilingj5ebottomup_floor3h5LinuxProcessSemanticsfLinuxProcessSem5Statep16VmMaps04Nposp1csp_window_lop1avm_init_sp46Stdlib6ZArith6BinInt1Zua2le35stdpp9bitvectorbdefinitionshg7bbv_unsignedp19alloc_topj5ainit_sp_okhg72bv37Corelib4Init9Datatypeshl24listhl24prod3h5LinuxProcessSemanticsfLinuxProcessSem3Runhna8valid_spp19ProcInputp1ainit_modelp18m_vmmapshl24boolhl24true5h5LinuxProcessSemanticsfLinuxProcessSem3Sys2Mm4Mmaphu6h2mmap_off_aligned_bhg77Z_to_bvhu6bmmap_anon_bhu6fmmap_flags_coreua7testbitp1fpage_round_up_Zp19page_sizeua6modulohl24conshl26lengthhl23nathl23nil37Corelib4Init5Peanoiqf2lt37Corelib5Lists7ListDefis96firstnis93nthis95skipn" s.   (* [comment removed for export] *)
@@ -57,8 +57,7 @@ Proof.
 Qed.
 
 (* [comment removed for export] *)
-Lemma page_round_up_Z_aligned' : ltac2:(zQ "50!h9!j0!im8!ina!io6>1z$0@3$1$0@2$4@1$2^1$3Z").
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 
 (* [comment removed for export] *)
 Lemma firstn1_skipn_nth : ltac2:(zQ "c0!s8!hkc!hma!iof!ip7!iq1!iq8!j0!is3!iu0!iua!iv1>1l@1$2@1$1@1$0#8>1i$5>1d@1$1@1$0#8>0@2$8^2@2$4@1$1@1$0#8^3@3$7@1$2@1$1@1$0#8@3$9@1$1@1$0#8N1@3$b@1$1@1$0#8^3^4@3$3@1$1@1$0#8@4$a@1$1@1$0#8^3^4^2@1$6@1$1@1$0#8").

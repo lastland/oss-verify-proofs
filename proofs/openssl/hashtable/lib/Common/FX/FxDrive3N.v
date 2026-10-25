@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool Uint63 PrimString.
 From stdpp Require Import bitvector.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem.
@@ -279,7 +280,7 @@ Proof.
   pose proof (pg_up_spec R0 len Hle) as HnZ.
   set (nZi := pg_up len) in *. set (nZ := page_round_up_Z (to_Z len)) in *.
   assert (HnZpos : 0 < nZ) by (apply page_round_up_Z_pos; exact Hpos).
-  assert (HnZmod : nZ mod 4096 = 0) by (apply page_round_up_Z_mod).
+  assert (HnZmod : nZ mod 4096 = 0) by (apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   unfold tag_ok in Htag. apply andb_true_iff in Htag as [Htag Hlt].
   apply andb_true_iff in Htag as [Hn0 Hn61]. apply ltb_spec in Hn0, Hn61. rewrite to_Z_0 in Hn0.
   change (to_Z 1152921504606846976) with (2 ^ 60) in Hn61.

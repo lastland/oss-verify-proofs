@@ -4,6 +4,7 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require Export ZBits.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType StackLayout State Run.
@@ -73,59 +74,17 @@ Proof. apply bv_eq. reflexivity. Qed.
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
-#[using="Type"] Lemma Z_testbit_high : forall n a k, (0 <= n)%Z -> (0 <= a < 2^n)%Z -> (n <= k)%Z ->
-  Z.testbit a k = false.
-Proof.
-  intros n a k Hn [Ha1 Ha2] Hk.
-  exact (proj1 (Z.bounded_iff_bits_nonneg n a Hn Ha1) Ha2 k Hk).
-Qed.
 
-#[using="Type"] Lemma Z_bounded_by_bits : forall n a, (0 <= n)%Z -> (0 <= a)%Z ->
-  (forall k, (n <= k)%Z -> Z.testbit a k = false) -> (a < 2^n)%Z.
-Proof.
-  intros n a Hn Ha Hb. exact (proj2 (Z.bounded_iff_bits_nonneg n a Hn Ha) Hb).
-Qed.
 
-#[using="Type"] Lemma Z_land_range : forall a b : Z, (0 <= a < 2^64)%Z -> (0 <= b)%Z ->
-  (0 <= Z.land a b < 2^64)%Z.
-Proof.
-  intros a b Ha Hb. split; [apply Z.land_nonneg; lia|].
-  apply Z_bounded_by_bits; [lia| apply Z.land_nonneg; lia |].
-  intros k Hk. rewrite Z.land_spec.
-  rewrite (Z_testbit_high 64 a k) by lia. reflexivity.
-Qed.
 
-#[using="Type"] Lemma Z_lor_range : forall a b : Z, (0 <= a < 2^64)%Z -> (0 <= b < 2^64)%Z ->
-  (0 <= Z.lor a b < 2^64)%Z.
-Proof.
-  intros a b Ha Hb. split; [apply Z.lor_nonneg; lia|].
-  apply Z_bounded_by_bits; [lia| apply Z.lor_nonneg; lia |].
-  intros k Hk. rewrite Z.lor_spec.
-  rewrite (Z_testbit_high 64 a k) by lia.
-  rewrite (Z_testbit_high 64 b k) by lia.
-  reflexivity.
-Qed.
 
-#[using="Type"] Lemma Z_lxor_range : forall a b : Z, (0 <= a < 2^64)%Z -> (0 <= b < 2^64)%Z ->
-  (0 <= Z.lxor a b < 2^64)%Z.
-Proof.
-  intros a b Ha Hb. split; [apply Z.lxor_nonneg; lia|].
-  apply Z_bounded_by_bits; [lia| apply Z.lxor_nonneg; lia |].
-  intros k Hk. rewrite Z.lxor_spec.
-  rewrite (Z_testbit_high 64 a k) by lia.
-  rewrite (Z_testbit_high 64 b k) by lia.
-  reflexivity.
-Qed.
 
-#[using="Type"] Lemma Z_shiftr_range : forall a k : Z, (0 <= a < 2^64)%Z -> (0 <= k)%Z ->
-  (0 <= Z.shiftr a k < 2^64)%Z.
-Proof.
-  intros a k Ha Hk. rewrite Z.shiftr_div_pow2 by lia.
-  pose proof (Z.pow_pos_nonneg 2 k ltac:(lia) Hk).
-  split; [apply Z.div_pos; lia|].
-  apply Z.le_lt_trans with a; [|lia].
-  apply Z.div_le_upper_bound; nia.
-Qed.
+
+
+
+
+
+
 
 (* [comment removed for export] *)
 #[using="Type"] Lemma bv_swrap_add_idemp_l : forall n x y,

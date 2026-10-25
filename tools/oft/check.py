@@ -7,8 +7,9 @@
                    Statements.v, Characterise.v
   proofs           each proofs/<p>/<h>/<s>/: compile it against the statements
                    (from --base, when given: the base branch's build) and the
-                   harness's proof library proofs/<p>/<h>/lib/ if it has one
-                   (compiled once), then compile a wrapper this tool writes,
+                   shared library proofs/lib/ and harness's proof library
+                   proofs/<p>/<h>/lib/ if present (each compiled once), then
+                   compile a wrapper this tool writes,
                    which ascribes the proof's theorem to the statement and
                    prints its assumptions; every assumption must be in
                    toolchain/allowed-axioms.txt.  The kernel checks every term
@@ -132,10 +133,10 @@ def rocqchk_axioms(text):
     return ok, axioms
 
 
-def _loadpath(build, h):
-    """-Q mappings for the core and one harness, from a _build/default tree."""
-    return ["-Q", os.path.join(build, "theories"), "OssFuzzTheorems.Core",
-            "-Q", os.path.join(build, h.dir), h.data["rocq"]]
+def _loadpath(build, h=None):
+    """-Q mappings for the core and, when given, one harness, from a _build/default tree."""
+    q = ["-Q", os.path.join(build, "theories"), "OssFuzzTheorems.Core"]
+    return q + ["-Q", os.path.join(build, h.dir), h.data["rocq"]] if h else q
 
 
 def _rocqchk(root, qargs, modules, allowed, log):
@@ -175,39 +176,44 @@ def check_statements(root, h, allowed, work, out, rocqchk=False):
 
 
 def compile_lib(root, h, base, work, libs, out):
-    """The -Q mapping of h's proof library, proofs/<p>/<h>/lib/ (OssFuzzTheorems.Proofs.<p>.<h>.lib, every .v at any
-    depth), or [] when h has none.  Compiled once per check run against the statements in `base`; `libs` holds the
-    mapping, or the error, per harness."""
-    if h.dir in libs:
-        if isinstance(libs[h.dir], CheckError):
-            raise libs[h.dir]
-        return libs[h.dir]
+    """The -Q mappings of proofs/lib/ and h's proof library, when present, in dependency order.  Each is compiled
+    once per check run against `base`; `libs` caches its mapping or error by source directory."""
+    sharedq = _compile_lib(root, os.path.join("proofs", "lib"), names.SHARED_PROOF_THEORY,
+                           _loadpath(base), work, libs, out)
     rel = os.path.join("proofs", h.project.name, h.name, "lib")
+    return sharedq + _compile_lib(root, rel, names.rocq_proof(h.project.name, h.name, "lib"),
+                                  _loadpath(base, h) + sharedq, work, libs, out)
+
+
+def _compile_lib(root, rel, lib_mod, loadpath, work, libs, out):
+    """Compile every .v below rel from source, using the same per-run cache for shared and harness libraries."""
+    if rel in libs:
+        if isinstance(libs[rel], (CheckError, OSError)):
+            raise libs[rel]
+        return libs[rel]
     src = os.path.join(root, rel)
     if not os.path.isdir(src):
-        libs[h.dir] = []
+        libs[rel] = []
         return []
-    lib_mod = names.rocq_proof(h.project.name, h.name, "lib")
-    d = tempfile.mkdtemp(prefix="lib-", dir=work)
-    files = []
-    for dp, _dn, fn in os.walk(src):
-        for f in fn:
-            if f.endswith(".v"):
-                dst = os.path.join(d, os.path.relpath(os.path.join(dp, f), src))
-                os.makedirs(os.path.dirname(dst), exist_ok=True)
-                shutil.copy(os.path.join(dp, f), dst)
-                files.append(dst)
-    q = _loadpath(base, h) + ["-Q", d, lib_mod]
     try:
+        d = tempfile.mkdtemp(prefix="lib-", dir=work)
+        files = []
+        for dp, _dn, fn in os.walk(src):
+            for f in fn:
+                if f.endswith(".v"):
+                    dst = os.path.join(d, os.path.relpath(os.path.join(dp, f), src))
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    shutil.copy(os.path.join(dp, f), dst)
+                    files.append(dst)
         if not files:
             raise CheckError("%s: holds no .v file" % rel)
-        _compile_in_parallel(rel, files, d, q)
-    except CheckError as e:
-        libs[h.dir] = e
+        _compile_in_parallel(rel, files, d, loadpath + ["-Q", d, lib_mod])
+    except (CheckError, OSError) as e:
+        libs[rel] = e
         raise
-    libs[h.dir] = ["-Q", d, lib_mod]
+    libs[rel] = ["-Q", d, lib_mod]
     print("%s: %d files compiled" % (rel, len(files)), file=out)
-    return libs[h.dir]
+    return libs[rel]
 
 
 def _compile_in_parallel(rel, files, d, q):
@@ -229,7 +235,8 @@ def _compile_in_parallel(rel, files, d, q):
     os.makedirs(logs)
     log_of = {f: os.path.join(logs, os.path.relpath(f, d).replace(os.sep, "__") + ".log") for f in files}
     pending, done, running, failed = set(files), set(), {}, None
-    with concurrent.futures.ThreadPoolExecutor(len(os.sched_getaffinity(0))) as ex:
+    cpus = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
+    with concurrent.futures.ThreadPoolExecutor(cpus) as ex:
         while pending or running:
             if failed is None:
                 for f in sorted(x for x in pending if deps[x] <= done):
@@ -250,8 +257,8 @@ def _compile_in_parallel(rel, files, d, q):
 
 
 def check_proof(root, st, pd, base, allowed, work, out, libs, rocqchk=False):
-    """Compile one proof directory against the statements in `base` (a _build/default tree) and its harness's proof
-    library, then the wrapper, and audit the wrapper's assumptions.  With rocqchk, return what rocqchk_proofs needs."""
+    """Compile one proof directory against the statements in `base` (a _build/default tree), shared and harness proof
+    libraries, then the wrapper, and audit the wrapper's assumptions.  With rocqchk, return what rocqchk_proofs needs."""
     h = st.harness
     p, hn, s = st.id.split("/")
     proof_mod = names.rocq_proof(p, hn, s)
@@ -387,7 +394,7 @@ def run(root, units, base=None, parts="statements,proofs,counterexamples", allow
     want = set(parts.split(","))
     work = tempfile.mkdtemp(prefix="oft-check-")
     bad = examined = 0
-    libs = {}  # harness dir -> its proof library's -Q mapping, or the error compiling it
+    libs = {}  # proof library source dir -> its -Q mapping, or the error compiling it
     try:
         allow = allowed_axioms(root, allowed) if want & {"statements", "proofs"} else set()
         if want & {"statements", "proofs"}:

@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool Finite.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase Fs State Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
@@ -1055,17 +1056,15 @@ Proof.
   intros x H. unfold page_round_up_Z, page_size in *. Z.div_mod_to_equations. lia.
 Qed.
 
-Lemma page_round_up_Z_ge : forall x, x <= page_round_up_Z x.
-Proof. intros x. unfold page_round_up_Z, page_size. Z.div_mod_to_equations. lia. Qed.
+
 
 Lemma page_round_up_Z_lt : forall x, page_round_up_Z x < x + page_size.
 Proof. intros x. unfold page_round_up_Z, page_size. Z.div_mod_to_equations. lia. Qed.
 
-Lemma page_round_up_Z_mod : forall x, page_round_up_Z x mod page_size = 0.
-Proof. intros x. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 
 Lemma page_round_up_Z_pos : forall x, 0 < x -> 0 < page_round_up_Z x.
-Proof. intros x H. pose proof (page_round_up_Z_ge x). lia. Qed.
+Proof. intros x H. pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge x). lia. Qed.
 
 Lemma bv_sub_no_wrap : forall (x y : word),
   bv_unsigned y <= bv_unsigned x ->

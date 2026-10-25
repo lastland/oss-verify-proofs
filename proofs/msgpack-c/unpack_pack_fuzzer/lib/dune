@@ -4,4 +4,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.msgpack_c.unpack_pack_fuzzer.lib)
  (package rocq-oss-fuzz-theorems-msgpack-c-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer))

@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require Import ZBits.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem.
@@ -63,7 +64,7 @@ Proof.
       assert (Hp : 0 < 2 ^ ((zev p b mod 2 ^ 64) mod 64)) by (apply Z.pow_pos_nonneg; [lia | apply Z.mod_pos_bound; lia]).
       split; [apply Z.div_pos; lia|]. apply Z.div_lt_upper_bound; [lia|]. nia.
     + rewrite u_and64, IHa, IHb. symmetry. apply Z.mod_small.
-      pose proof (zmod64_range (zev p a)). pose proof (zmod64_range (zev p b)). apply ABoot.PropExec.Z_land_range; lia.
+      pose proof (zmod64_range (zev p a)). pose proof (zmod64_range (zev p b)). apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_land_range; lia.
   - (* [comment removed for export] *) cbn [winst zev]. apply TRIV.
   - (* [comment removed for export] *) destruct op; cbn [winst zev]; try apply TRIV.
     rewrite u_mul64, IHa, IHb. rewrite <- Z.mul_mod by lia. reflexivity.

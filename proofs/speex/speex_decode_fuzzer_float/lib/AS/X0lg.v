@@ -3,7 +3,8 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
-From OssFuzzTheorems.Proofs.speex.speex_decode_fuzzer_float.lib.AS Require Import X0k6 X0mr.
+From OssFuzzTheorems.Proofs.speex.speex_decode_fuzzer_float.lib.AS Require Import X0k6.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Import ListNotations.
 Open Scope bv_scope.

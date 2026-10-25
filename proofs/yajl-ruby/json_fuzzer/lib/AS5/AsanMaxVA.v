@@ -5,6 +5,7 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require Import ZBits.
 From Stdlib Require Import ZArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC.
@@ -106,7 +107,7 @@ Proof.
     apply Z.div_le_upper_bound; [apply Z.pow_pos_nonneg; lia|].
     assert (1 <= 2 ^ k)%Z by (change 1%Z with (2 ^ 0)%Z; apply Z.pow_le_mono_r; lia). nia. }
   rewrite (u_Z2bv (Z.shiftr _ _)) by lia.
-  apply u_Z2bv; pose proof (PropExec.Z_lor_range (bv_unsigned s) (Z.shiftr (bv_unsigned s) k) Hs Hr); lia.
+  apply u_Z2bv; pose proof (OssFuzzTheorems.Proofs.Shared.ZBits.Z_lor_range (bv_unsigned s) (Z.shiftr (bv_unsigned s) k) Hs Hr); lia.
 Qed.
 
 Lemma wsm6_val : forall x : word, (2 ^ 46 <= bv_unsigned x < 2 ^ 47)%Z -> wsm6 x = Z_to_bv 64 140737488355327.

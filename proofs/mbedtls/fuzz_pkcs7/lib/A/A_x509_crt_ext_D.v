@@ -1,5 +1,6 @@
 (* Machine-generated data computed from the task's compiled program image (decoder-built tables and encoded data blocks); may contain fragments of third-party object code - see NOTICE. No Anthropic licence header applies to this file. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require Import ZBits.
 From Stdlib Require Import ZArith NArith List Lia Bool Permutation.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem Fpu.
@@ -748,7 +749,7 @@ Section Walk.
     pose proof (Z.land_nonneg (bv_unsigned (sx32 et)) (bv_unsigned (sx32 (x_et X)))) as LN.
     assert (KD0 : Z.land (bv_unsigned (sx32 et)) (bv_unsigned (sx32 (x_et X))) = 0).
     { first [ exact KD | apply land64_zero in KD; [exact KD|] | apply mod64_zero in KD; [exact KD|] ].
-      all: pose proof (PropExec.Z_land_range (bv_unsigned (sx32 et)) (bv_unsigned (sx32 (x_et X))) ltac:(clear - UR; lia) ltac:(clear - ER; lia)); clear - H UR ER; lia. }
+      all: pose proof (OssFuzzTheorems.Proofs.Shared.ZBits.Z_land_range (bv_unsigned (sx32 et)) (bv_unsigned (sx32 (x_et X))) ltac:(clear - UR; lia) ltac:(clear - ER; lia)); clear - H UR ER; lia. }
     clear KD.
     (* [comment removed for export] *)
     do 4 zstep.

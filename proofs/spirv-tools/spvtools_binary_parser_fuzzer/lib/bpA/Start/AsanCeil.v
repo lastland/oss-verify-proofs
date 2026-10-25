@@ -7,7 +7,7 @@ From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State StackLayout Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys Require Import Syscall Uapi.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
-From OssFuzzTheorems.Proofs.spirv_tools.spvtools_binary_parser_fuzzer.lib Require Import PlacementSearch.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Import ListNotations.
 Open Scope Z_scope.
 #[global] Unset Lia Cache. #[global] Unset Nia Cache. #[global] Unset Nra Cache.
@@ -49,8 +49,7 @@ Proof.
   destruct (Z.testbit (bv_unsigned flags) 5); discriminate.
 Qed.
 
-Lemma page_round_up_Z_aligned' : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 
 Lemma firstn1_skipn_nth : forall (l : list byte) (i : nat) (d : byte),
   (i < length l)%nat -> firstn 1 (skipn i l) = [nth i l d].

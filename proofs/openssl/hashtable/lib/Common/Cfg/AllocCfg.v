@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
 From LinuxProcessSemantics.LinuxProcessSem Require Import
@@ -457,7 +458,7 @@ Proof.
     with (ledger_grant a (Z_to_bv 64 (page_round_up_Z len)) (m_vmmaps m)).
   apply ledger_inv_grant; try assumption.
   - apply page_round_up_Z_pos. exact Hlen.
-  - apply page_round_up_Z_mod.
+  - apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned.
 Qed.
 
 End WithCfg.
@@ -1279,7 +1280,7 @@ Proof.
     with (ledger_grant_na a (Z_to_bv 64 (page_round_up_Z len)) (m_vmmaps m)).
   apply ledger_inv_grant_na; try assumption.
   - apply page_round_up_Z_pos. exact Hlen.
-  - apply page_round_up_Z_mod.
+  - apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned.
 Qed.
 
 (* [comment removed for export] *)

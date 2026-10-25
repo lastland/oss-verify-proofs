@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType Fs State Monad Specs Run.
@@ -72,7 +73,7 @@ Lemma madvise_dontneed_char : forall segs ms mo addr len o,
          (mdl_madvise mo (Z_to_bv 64 addr) (Z_to_bv 64 (page_round_up_Z len))) [].
 Proof.
   intros segs ms mo addr len o Hlen Hpos Hal Hend H10 H11 H12 Hok.
-  pose proof (page_round_up_Z_ge_all len) as HnZ.
+  pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len) as HnZ.
   rewrite syscall_spec_233 by reflexivity. rewrite in_a0_si, in_a1_si, in_a2_si, H10, H11, H12.
   unfold madvise_spec.
   assert (E0 : bv_unsigned (Z_to_bv 64 addr) = addr) by (apply unsigned_lit; lia).
@@ -104,7 +105,7 @@ Lemma madv_req_facts : forall addr len, 0 < len < 2^64 -> 0 <= addr -> addr mod 
   /\ 0 < page_round_up_Z len /\ page_round_up_Z len mod 4096 = 0 /\ addr mod 4096 = 0 /\ (addr + page_round_up_Z len) mod 4096 = 0.
 Proof.
   intros addr len Hlen Hpos Hal Htop.
-  pose proof (page_round_up_Z_ge_all len). pose proof (page_round_up_Z_aligned' len) as Hnl. unfold page_size in Hnl, Hal.
+  pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len). pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned len) as Hnl. unfold page_size in Hnl, Hal.
   repeat split; try (apply unsigned_lit); try lia.
 Qed.
 

@@ -7,6 +7,7 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
@@ -3185,7 +3186,7 @@ Proof.
   destruct (epend_len regs pc mem rom len H11 Hlen) as [Hl1 Hne1]. fold ms in Hl1, Hne1.
   assert (Hn0 : (0 <= nZ)%Z) by (unfold nZ; apply page_round_up_Z_nonneg; lia).
   assert (HnZpos : (0 < nZ)%Z) by (unfold nZ; apply page_round_up_Z_pos'; lia).
-  assert (HnZal : (nZ mod page_size = 0)%Z) by (unfold nZ; apply page_round_up_Z_aligned').
+  assert (HnZal : (nZ mod page_size = 0)%Z) by (unfold nZ; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   assert (Hnf : mmap_grant_refusable flags model nZ = false).
   { destruct (grant_ok_na_pin_unpack _ _ _ Ha0) as (P1 & P2 & P3 & P4).
     exact (mmap_grant_not_refusable_of_base flags model nZ a0 P1 P2 P3 P4 Hb0). }
@@ -3328,7 +3329,7 @@ Proof.
   destruct (epend_len regs pc mem rom len H11 Hlen) as [Hl1 Hne1]. fold ms in Hl1, Hne1.
   assert (Hn0 : (0 <= nZ)%Z) by (unfold nZ; apply page_round_up_Z_nonneg; lia).
   assert (HnZpos : (0 < nZ)%Z) by (unfold nZ; apply page_round_up_Z_pos'; lia).
-  assert (HnZal : (nZ mod page_size = 0)%Z) by (unfold nZ; apply page_round_up_Z_aligned').
+  assert (HnZal : (nZ mod page_size = 0)%Z) by (unfold nZ; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   assert (Hnf : mmap_reserve_refusable model nZ = false).
   { destruct (grant_ok_na_pin_unpack _ _ _ Ha0) as (P1 & P2 & P3 & P4).
     exact (mmap_reserve_not_refusable_of_base model nZ a0 P1 P2 P3 P4). }
@@ -3898,7 +3899,7 @@ Proof.
     rewrite Hlen. pose proof (page_round_up_Z_bounds lz ltac:(lia)) as PB. unfold page_size in PB.
     rewrite page_up_eq.
     split; [exact R11'|]. split; [unfold two64 in Hlz; lia|]. split; [reflexivity|]. split; [lia|]. split; [lia|].
-    split; [apply page_round_up_Z_aligned'|]. intros E' _. reflexivity.
+    split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|]. intros E' _. reflexivity.
   - destruct (xlo (kn cs) (reg cs 11)) as [lo|] eqn:Hxl; [|discriminate].
     destruct (xhi (kn cs) (reg cs 11)) as [hi|] eqn:Hxh; [|discriminate].
     match type of HML with (if ?c then _ else _) = _ => destruct c eqn:Hc; [|discriminate] end.

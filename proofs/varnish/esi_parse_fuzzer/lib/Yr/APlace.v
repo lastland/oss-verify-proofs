@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
@@ -18,15 +19,8 @@ Open Scope bv_scope.
 Local Open Scope Z_scope.
 
 (* [comment removed for export] *)
-Lemma page_round_up_Z_aligned : forall z, (page_round_up_Z z mod page_size = 0)%Z.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
-Lemma page_round_up_Z_ge : forall z, (z <= page_round_up_Z z)%Z.
-Proof.
-  intro z. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-  pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)).
-  lia.
-Qed.
+
+
 
 (* [comment removed for export] *)
 (* [comment removed for export] *)
@@ -209,9 +203,9 @@ Section Placement.
     /\ region_free maps (Z_to_bv 64 g') (Z_to_bv 64 nZ) = true.
   Proof.
     intros g HLg Hg Hav g'.
-    pose proof (page_round_up_Z_ge g) as G1. pose proof (page_round_up_Z_lt g) as G2.
+    pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge g) as G1. pose proof (page_round_up_Z_lt g) as G2.
     unfold page_size in *. subst g'.
-    split; [apply page_round_up_Z_aligned|]. split; [lia|]. split; [lia|].
+    split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|]. split; [lia|]. split; [lia|].
     apply region_free_intro. intros b s Hin.
     pose proof (bv_unsigned_in_range 64 b) as Rb. pose proof (bv_unsigned_in_range 64 s) as Rs. unfold bv_modulus in Rb, Rs.
     unfold iv_overlap. rewrite !u64_lit by lia.

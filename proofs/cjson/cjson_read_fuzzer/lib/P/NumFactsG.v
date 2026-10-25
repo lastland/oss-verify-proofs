@@ -72,12 +72,6 @@ Open Scope Z_scope.
 Local Opaque zrepeat.
 Local Ltac Z.euclidean_division_equations_cleanup ::= idtac.
 
-Theorem num_fmt_g_total_proof : NUM_FMT_G_TOTAL.
-Proof. exact fmt_g_total. Qed.
-
-Theorem num_fmt_d_total_proof : NUM_FMT_D_TOTAL.
-Proof. exact fmt_d_spec. Qed.
-
 Theorem fmt_g_ret_proof : FMT_G_RET.
 Proof.
   intros d prec o l Hp E.
@@ -199,16 +193,3 @@ Proof.
   - destruct (PN eq_refl) as (_ & _ & _ & _ & _ & ZB & _). apply ZB. lia.
   - destruct (PZ eq_refl) as (-> & _). rewrite znth_zrepeat. destruct (_ && _); lia.
 Qed.
-
-(* [comment removed for export] *)
-(* [comment removed for export] *)
-(* [comment removed for export] *)
-
-
-(* [comment removed for export] *)
-(* [comment removed for export] *)
-(* [comment removed for export] *)
-From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec Require FloatScan_nn.
-Import OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec.FloatScan_nn.FloatScan_junk.
-Theorem num_sscanf_junk_proof : NUM_SSCANF_JUNK.
-Proof. exact sscanf_junk. Qed.

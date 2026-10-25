@@ -1,6 +1,7 @@
 (* Machine-generated data computed from the task's compiled program image (decoder-built tables and encoded data blocks); may contain fragments of third-party object code - see NOTICE. No Anthropic licence header applies to this file. *)
 
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Lib Require TermBlob.
 #[local] Ltac2 tbs__ () := ["@Corelib.Numbers.BinNums"; "Z"; "@Corelib.Init.Datatypes"; "prod"; "list"; "app"; "pair"; "bool"; "cons"; "length"; "true"; "false"; "fst"; "negb"; "@stdpp.bitvector.definitions"; "bv"; "bv_unsigned"; "@Stdlib.ZArith.BinInt.Z"; "le"; "add"; "lt"; "pow"; "eqb"; "modulo"; "sub"; "@Corelib.Init.Logic"; "eq"; "and"; "ex"; "@LinuxProcessSemantics.LinuxProcessSem.State"; "live_bytes"; "m_vmmaps"; "Model"; "vm_maps"; "vm_reserved"; "m_vm_materialized"; "vm_init_sp"; "vm_limit"; "with_vmmaps"; "iv_subtract"; "map_remove"; "maps_subtract"; "maps_subtract_all"; "page_size"; "region_free"; "vm_backing_used"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Malloc.ContractDrv"; "vm_room"; "vm_pot"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Malloc.FreeGap"; "disjoint"; "zpair"; "pairwise"; "ledger_disciplined"; "total"; "entry_ok"; "ledger_budget_ok"; "page_len"; "@Corelib.Lists.ListDef"; "map"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Fw.SysSpec"; "mmap_nZ"; "mmap_n"; "mmap_none_vm"; "mmap_place_ok"; "mmap_place_ok_none"; "mmap_rw_vm"; "munmap_model"; "@Stdlib.Lists.List"; "filter"; "In"; "@Corelib.Init.Peano"; "le"; "@LinuxProcessSemantics.LinuxProcessSem.Sys.Mm.Mmap"; "mmap_noreserve_b"; "@LinuxProcessSemantics.LinuxProcessSem.Sys.Mm.Mprotect"; "mprotect_budget_ok"; "mprotect_model_next"].
 #[local] Ltac2 tb__ s := OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Lib.TermBlob.dec2 (tbs__ ()) s.
@@ -91,8 +92,8 @@ Lemma mmap_nZ_page_len : ltac2:(tb__ "0|1|
 ScQ40M0A1S10Z0SdG0R1A2A2S31S33R2A1A1F_;Flen;").
 Proof.
   intros len Hl. unfold mmap_nZ, page_len, PG. split.
-  - pose proof (page_round_up_Z_ge (bv_unsigned len)). lia.
-  - apply page_round_up_Z_aligned.
+  - pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (bv_unsigned len)). lia.
+  - apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned.
 Qed.
 
 Lemma disciplined_budget : ltac2:(tb__ "0|2|

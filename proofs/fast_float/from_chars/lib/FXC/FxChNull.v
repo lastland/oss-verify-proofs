@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool FunctionalExtensionality.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Monad Run Specs.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
@@ -1171,7 +1172,7 @@ Proof. LiaFast.lf_pins (fun (Hsegb Hoff : LiaFast.U) => LiaFast.u0).
   { rewrite fg64 by exact Hlen. match goal with H : Z.eqb nZ _ = true |- _ => apply Z.eqb_eq in H; symmetry; exact H end. }
   assert (Hnz0 : w_is0 (Z_to_bv 64 len) = false) by (match goal with H : negb (w_is0 _) = true |- _ => apply negb_true_iff in H; exact H end).
   assert (HnZpos : 0 < nZ) by (rewrite <- HnZ; exact (len_nZ_pos _ Hnz0)).
-  assert (HnZal : nZ mod 4096 = 0) by (rewrite <- HnZ; exact (page_round_up_Z_aligned' _)).
+  assert (HnZal : nZ mod 4096 = 0) by (rewrite <- HnZ; exact (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned _)).
   assert (Hbud0 : vm_backing_used model + (if gkind_eqb k GE then nZ else 0) <= LIMIT).
   { assert (HFL : Forall (fact_ok E) (s_facts L)) by (destruct (sden_0 _ _ _ _ Hsd) as (_ & _ & _ & _ & _ & _ & X & _); exact X).
     pose proof (den_backing_le segs LIMIT model0 mem0 E L M ms model (s_facts L) Hd HFL) as Hv.

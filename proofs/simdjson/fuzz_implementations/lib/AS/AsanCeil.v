@@ -6,7 +6,7 @@ From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State StackLayout Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys Require Import Syscall Uapi.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
-From OssFuzzTheorems.Proofs.simdjson.fuzz_implementations.lib.AS Require Import PlacementSearch.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Import ListNotations.
 Open Scope Z_scope.
@@ -80,12 +80,7 @@ Lemma init_sp_ok_mkVmMapsFull : forall h r m na sb b l mb,
   init_sp_ok h -> init_sp_ok (mkVmMapsFull r m na sb b l mb (vm_init_sp h)).
 Proof. intros. unfold init_sp_ok in *. cbn. assumption. Qed.
 
-Lemma page_round_up_Z_ge_all : forall z, z <= page_round_up_Z z.
-Proof.
-  intros z. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-  pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)) as Hr. lia.
-Qed.
+
 
 Lemma mmap_off_aligned_b_0 : mmap_off_aligned_b (Z_to_bv 64 0) = true.
 Proof. vm_compute. reflexivity. Qed.
@@ -101,8 +96,7 @@ Proof.
   destruct (Z.testbit (bv_unsigned flags) 5); discriminate.
 Qed.
 
-Lemma page_round_up_Z_aligned' : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 Lemma page_round_up_Z_pos' : forall z, 0 < z -> 0 < page_round_up_Z z.
 Proof. intros z Hz. pose proof (page_round_up_Z_ge z). lia. Qed.
 

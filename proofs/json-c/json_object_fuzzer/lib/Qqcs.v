@@ -11,7 +11,7 @@ Module Mq0.
 
 Import Stdlib.ZArith.ZArith Stdlib.Lists.List Stdlib.Bool.Bool Stdlib.micromega.Lia.
 Import LinuxProcessSemantics.LinuxProcessSem.BvBase LinuxProcessSemantics.LinuxProcessSem.State LinuxProcessSemantics.LinuxProcessSem.Monad LinuxProcessSemantics.LinuxProcessSem.Specs.
-Import QybZ.Mq0 Qg4E.Mq0.
+Import QybZ.Mq0 OssFuzzTheorems.Proofs.Shared.PlacementSearch.
 Import ListNotations.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Open Scope bv_scope.
@@ -627,4 +627,3 @@ Proof.
 intros a n m H (Wm & Wn & Wl & Wsp). unfold model_ivs_wf. model_proj.
 repeat split; try assumption. apply ivs_wf_app; [apply lazy_interior_wf; exact H|exact Wl].
 Qed.
-

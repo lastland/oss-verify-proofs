@@ -156,7 +156,7 @@ Proof using.
     stepb_tk F_57974 D_57974 ltac:(rwH; reflexivity).
     stepiv F_579a0 D_579a0 (Z_to_bv 64 (cap + 1))
       ltac:(gres; rwH; unfold v_andi; change (bv_wrap 64 (bv_signed (4094%bv : bv 12))) with (2 ^ 64 - 2 ^ 1)%Z;
-            rewrite AX2S.land_highmask by lia; f_equal; change (2 ^ 1)%Z with 2%Z; lia).
+            rewrite ZBits.land_highmask by lia; f_equal; change (2 ^ 1)%Z with 2%Z; lia).
     stepiv F_579a4 D_579a4 (Z_to_bv 64 cap)
       ltac:(gres; rwH; unfold v_addi; u_norm; imm_norm; f_equal; lia).
     stepiv F_579a8 D_579a8 (Z_to_bv 64 1)

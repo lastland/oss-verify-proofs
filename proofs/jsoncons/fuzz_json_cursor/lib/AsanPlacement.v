@@ -3,7 +3,8 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
-From OssFuzzTheorems.Proofs.jsoncons.fuzz_json_cursor.lib Require Import AsanCeil PlacementSearch.
+From OssFuzzTheorems.Proofs.jsoncons.fuzz_json_cursor.lib Require Import AsanCeil.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Import ListNotations.
 Open Scope bv_scope.
 Local Open Scope Z_scope.

@@ -5,6 +5,7 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
@@ -945,7 +946,7 @@ Proof.
   rewrite Hb0 in Hchk.
   assert (Hn0 : (0 <= nZ)%Z) by (unfold nZ; apply page_round_up_Z_nonneg; lia).
   assert (HnZpos : (0 < nZ)%Z) by (unfold nZ; apply page_round_up_Z_pos'; lia).
-  assert (HnZal : (nZ mod page_size = 0)%Z) by (unfold nZ; apply page_round_up_Z_aligned').
+  assert (HnZal : (nZ mod page_size = 0)%Z) by (unfold nZ; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   pose (IB := {a : word | grant_ok_na (getr regs 10) model a nZ = true}).
   pose (effs := fun i : unit + IB => match i with
                            | inl _ => mkEffectU (errno_ret ENOMEM) [] [] [] [] []
@@ -1047,7 +1048,7 @@ Proof.
   assert (H0 : ms_gpr ms 0 = getr regs 10) by (unfold ms; rewrite ms_gpr_epend0; reflexivity).
   assert (Hn0 : (0 <= nZ)%Z) by (unfold nZ; apply page_round_up_Z_nonneg; lia).
   assert (HnZpos : (0 < nZ)%Z) by (unfold nZ; apply page_round_up_Z_pos'; lia).
-  assert (HnZal : (nZ mod page_size = 0)%Z) by (unfold nZ; apply page_round_up_Z_aligned').
+  assert (HnZal : (nZ mod page_size = 0)%Z) by (unfold nZ; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   pose (IB := {a : word | grant_ok_na (getr regs 10) model a nZ = true}).
   pose (effs := fun i : unit + IB => match i with
                            | inl _ => mkEffectU (errno_ret ENOMEM) [] [] [] [] []
@@ -1709,7 +1710,7 @@ Proof.
     rewrite Hlen. pose proof (page_round_up_Z_bounds lz ltac:(lia)) as PB. unfold page_size in PB.
     rewrite page_up_eq.
     split; [exact R11'|]. split; [unfold two64 in Hlz; lia|]. split; [reflexivity|]. split; [lia|]. split; [lia|].
-    split; [apply page_round_up_Z_aligned'|]. intros E' _. reflexivity.
+    split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|]. intros E' _. reflexivity.
   - destruct (xlo (kn cs) (reg cs 11)) as [lo|] eqn:Hxl; [|discriminate].
     destruct (xhi (kn cs) (reg cs 11)) as [hi|] eqn:Hxh; [|discriminate].
     pose proof (xlo_sound SEGS E _ (kn cs) _ lo HK Hxl) as B1.

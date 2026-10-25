@@ -14,39 +14,10 @@ From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec Require SoftFloat.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec Require FmtFp.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec Require FloatScan.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec Require NumFacts.
+From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec Require FloatScan_nn.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P Require NumFactsG.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U Require F_printf_iface.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U Require NumFacts_iface.
-Module NumFactsG.
-(* [comment removed for export] *)
-(* [comment removed for export] *)
-Import Stdlib.ZArith.ZArith Stdlib.Bool.Bool Stdlib.Lists.List Stdlib.micromega.Lia.
-Import LinuxProcessSemantics.LinuxProcessSem.BvBase.
-Import OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec.Prelim OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec.SoftFloat OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec.FmtFp OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec.FloatScan OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec.NumFacts.
-
-Import OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U.F_printf_iface OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U.NumFacts_iface.F_fmt_fp OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U.NumFacts_iface.
-Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
-
-Open Scope Z_scope.
-
-Theorem fmt_g_ret_proof : F_printf_iface.FMT_G_RET.
-Proof. exact OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P.NumFactsG.fmt_g_ret_proof. Qed.
-
-Theorem fmt_g_len25_proof : F_printf_iface.FMT_G_LEN25.
-Proof. exact OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P.NumFactsG.fmt_g_len25_proof. Qed.
-
-Theorem num_fmt_g_total_proof : NUM_FMT_G_TOTAL.
-Proof. exact OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P.NumFactsG.num_fmt_g_total_proof. Qed.
-
-Theorem num_fmt_d_total_proof : NUM_FMT_D_TOTAL.
-Proof. exact OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P.NumFactsG.num_fmt_d_total_proof. Qed.
-
-Theorem num_fmt_g_facts_proof : NUM_FMT_G_FACTS.
-Proof. exact OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P.NumFactsG.num_fmt_g_facts_proof. Qed.
-
-Theorem num_sscanf_junk_proof : NUM_SSCANF_JUNK.
-Proof. exact OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P.NumFactsG.num_sscanf_junk_proof. Qed.
-End NumFactsG.
 
 (* [comment removed for export] *)
 (* [comment removed for export] *)
@@ -60,7 +31,6 @@ Import OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U.CJ_pv_objB.CJ_pvalue
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U Require CJ_pv_objB.
 Import OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U.CJ_pv_objB.CJ_print.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U Require Import NumFacts_iface.
-Import NumFactsG.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.U Require F_printf_iface Scan_iface F_vsnprintf F_sscanf.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
@@ -78,7 +48,8 @@ Theorem pv_num_case' : forall HI n, pv_case_at PV_NUM_ENTRY HI n.
 Proof.
   intros HI n.
   exact (pv_num_case HI F_vsnprintf.sprintf_d_proof F_vsnprintf.sprintf_g_proof F_sscanf.rsscanf_lg_proof
-           fmt_g_ret_proof fmt_g_len25_proof num_fmt_g_facts_proof num_fmt_g_total_proof num_fmt_d_total_proof num_sscanf_junk_proof n).
+           NumFactsG.fmt_g_ret_proof NumFactsG.fmt_g_len25_proof NumFactsG.num_fmt_g_facts_proof
+           NumFacts.fmt_g_total NumFacts.fmt_d_spec FloatScan_nn.FloatScan_junk.sscanf_junk n).
 Qed.
 
 Theorem pvalue_spec' : forall HI n, pvalue_spec_at HI n.

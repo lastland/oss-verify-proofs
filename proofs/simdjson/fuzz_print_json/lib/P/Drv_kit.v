@@ -11,6 +11,7 @@ From OssFuzzTheorems.Proofs.simdjson.fuzz_print_json.lib.Malloc Require Import M
 From OssFuzzTheorems.Proofs.simdjson.fuzz_print_json.lib.MallocP Require Import RMallocRep RMallocTree RMalloc_iface.
 From OssFuzzTheorems.Proofs.simdjson.fuzz_print_json.lib.Spec Require Import Prelim STree Malloc Monad Stdio SjModel Target Driver Prog StrFun.
 From OssFuzzTheorems.Proofs.simdjson.fuzz_print_json.lib.P Require Import Layout Exit Printf_stdio_iface Sj_iface Driver_iface Pj_loc_defs.
+From OssFuzzTheorems.Proofs.simdjson.fuzz_print_json.lib.P Require Export Sj_kit.
 Import ListNotations.
 Import ITree.Exc.
 Open Scope Z_scope.
@@ -28,184 +29,10 @@ Local Ltac lia := first [std_lia__ | try (pose proof alloc_ceiling_range as CEIL
 Local Ltac std_nia__ := nia.
 Local Ltac nia := first [std_nia__ | try (pose proof alloc_ceiling_range as CEIL_RANGE__); std_nia__].
 Section WithCeiling0. Context {CE__ : Ceiling} {RN__ : RunRnd}.
-Definition agree_on (P : Z -> Prop) (m m' : mem) : Prop :=
-  forall a, 0 <= a < 2^64 -> P a ->
-    m' (wa a) = m (wa a) /\ (wview psegs m (wa a) <> None -> wview psegs m' (wa a) <> None).
-
-Lemma agree_on_refl : forall P m, agree_on P m m.
-Proof. intros P m a _ _. auto. Qed.
-Lemma agree_on_trans : forall P m1 m2 m3, agree_on P m1 m2 -> agree_on P m2 m3 -> agree_on P m1 m3.
-Proof. intros P m1 m2 m3 H1 H2 a Ha HP. destruct (H1 a Ha HP) as [E1 W1]. destruct (H2 a Ha HP) as [E2 W2]. split; [congruence|auto]. Qed.
-Lemma agree_on_mono : forall (P P' : Z -> Prop) m m', agree_on P m m' -> (forall a, P' a -> P a) -> agree_on P' m m'.
-Proof. intros P P' m m' H HP a Ha Hp. apply H; auto. Qed.
-
-Lemma agree_on_of_munch : forall W m m', munch W m m' -> wmono psegs m m' -> agree_on (fun a => outside W a) m m'.
-Proof.
-  intros W m m' MU WM a Ha Ho. split; [| intros H; apply WM; exact H].
-  apply MU. unfold wa. rewrite unsigned_lit by lia. exact Ho.
-Qed.
-
-Lemma agree_of_heap_pres : forall LB SP m m', rheap_pres LB SP m m' -> agree_on (rclient_addr LB SP) m m'.
-Proof. intros LB SP m m' H. exact H. Qed.
-Lemma agree_of_lx_pres : forall LB SP X m m', lx_pres LB SP X m m' -> agree_on (lx_client LB SP X) m m'.
-Proof. intros LB SP X m m' H. exact H. Qed.
 Lemma agree_of_drv_pres : forall LB SP m m', rdrv_pres LB SP m m' -> agree_on (lx_client LB SP DRVW) m m'.
 Proof. intros LB SP m m' H. exact H. Qed.
 
-Lemma bytes_at_agree : forall P m m' A bs,
-  agree_on P m m' -> bytes_at psegs m A bs -> (forall a, A <= a < A + Z.of_nat (length bs) -> P a) ->
-  bytes_at psegs m' A bs.
-Proof.
-  intros P m m' A bs HP (H0 & H1 & HB) HR. split; [exact H0|]. split; [exact H1|].
-  intros i Hi. rewrite <- (HB i Hi). unfold mrd.
-  destruct (HP (A + Z.of_nat i) ltac:(lia) ltac:(apply HR; lia)) as [E _]. rewrite E. reflexivity.
-Qed.
 
-Lemma wr_at_agree : forall P m m' A n,
-  agree_on P m m' -> wr_at psegs m A n -> (forall a, A <= a < A + n -> P a) -> wr_at psegs m' A n.
-Proof.
-  intros P m m' A n HP (H0 & H1 & HW) HR. split; [exact H0|]. split; [exact H1|].
-  intros i Hi. destruct (HP (A + i) ltac:(lia) ltac:(apply HR; lia)) as [_ W]. apply W. apply HW. exact Hi.
-Qed.
-
-Lemma rw_cells_agree : forall P m m' A cs,
-  agree_on P m m' -> rw_cells psegs m A cs -> (forall a, A <= a < A + Z.of_nat (cells_size cs) -> P a) ->
-  rw_cells psegs m' A cs.
-Proof.
-  intros P m m' A cs HP [[Hwf HB] HW] HR. split; [split; [exact Hwf|]|].
-  - eapply bytes_at_agree; eauto. rewrite cells_bytes_length by assumption. exact HR.
-  - eapply wr_at_agree; eauto.
-Qed.
-
-Lemma stk_agree : forall P m m' lo hi,
-  agree_on P m m' -> stk psegs m lo hi -> (forall a, lo <= a < hi -> P a) -> stk psegs m' lo hi.
-Proof.
-  intros P m m' lo hi HP ST HR. destruct ST as (H0 & H1 & HW). split; [exact H0|]. split; [exact H1|].
-  intros i Hi. destruct (HP i ltac:(lia) ltac:(apply HR; lia)) as [E W]. destruct (HW i Hi) as [W0 [b Hb]].
-  split; [apply W, W0|]. exists b. unfold mrd in *. rewrite E. exact Hb.
-Qed.
-
-Definition stdout_addr (a : Z) : Prop := (RSTDOUT <= a < RSTDOUT + 232) \/ (RSTDOUT_BUF <= a < RSTDOUT_BUF + 1024).
-Definition stderr_addr (a : Z) : Prop := RSTDERR <= a < RSTDERR + 232.
-Definition ssp_addr (a : Z) : Prop := (got_ssp <= a < got_ssp + 8) \/ (ssp_guard <= a < ssp_guard + 8).
-Definition lxs_addr (a : Z) : Prop :=
-  (LX_GOT_STDERR <= a < LX_GOT_STDERR + 8) \/ (LX_STDERR_PTR <= a < LX_STDERR_PTR + 8)
-  \/ (SJ_GOT_NOTHROW <= a < SJ_GOT_NOTHROW + 8) \/ (SJ_IMPL_VT24 <= a < SJ_IMPL_VT24 + 8)
-  \/ (SJ_DPI_VPTR <= a < SJ_DPI_VPTR + 80)
-  \/ (PJ_RELRO_LO <= a < PJ_RELRO_SSP) \/ (PJ_RELRO_SSP + 8 <= a < PJ_RELRO_HI) \/ (PJ_LOCLOCK <= a < PJ_LOCLOCK + 4).
-Definition sjs_addr (a : Z) : Prop := SJ_STATICS_LO <= a < SJ_STATICS_HI.
-
-Lemma stdout_file_agree : forall P m m' so,
-  agree_on P m m' -> (forall a, stdout_addr a -> P a) -> stdout_file m so -> stdout_file m' so.
-Proof.
-  intros P m m' so AG HP (flags & mode & tail & bufb & FC & FL & BUF & BP & BL & INA).
-  exists flags, mode, tail, bufb. split; [| split; [exact FL| split; [| auto]]].
-  - eapply rw_cells_agree; [exact AG| exact FC|]. intros a Ha. apply HP. left. unfold file_cells in Ha. cbn in Ha. lia.
-  - eapply rw_cells_agree; [exact AG| exact BUF|]. intros a Ha. apply HP. right. cbn in Ha. lia.
-Qed.
-
-Lemma stderr_wfile_agree : forall P m m',
-  agree_on P m m' -> (forall a, stderr_addr a -> P a) -> stderr_wfile m -> stderr_wfile m'.
-Proof.
-  intros P m m' AG HP (flags & mode & e & wend & tail & FC & FL). exists flags, mode, e, wend, tail. split; [| exact FL].
-  eapply rw_cells_agree; [exact AG| exact FC|]. intros a Ha. apply HP. unfold stderr_addr. unfold file_cells in Ha. cbn in Ha. lia.
-Qed.
-
-Lemma ssp_cells_agree : forall P m m' c,
-  agree_on P m m' -> (forall a, ssp_addr a -> P a) -> ssp_cells m c -> ssp_cells m' c.
-Proof.
-  intros P m m' c AG HP [H1 H2]. unfold ssp_cells, ssp_addr, got_ssp, ssp_guard in *. split.
-  - eapply rw_cells_agree; [exact AG| exact H1|]. intros a Ha. apply HP. cbn in Ha. lia.
-  - eapply rw_cells_agree; [exact AG| exact H2|]. intros a Ha. apply HP. cbn in Ha. lia.
-Qed.
-
-Lemma pj_locale_agree : forall P m m',
-  agree_on P m m' -> (forall a, PJ_LOC_LO <= a < PJ_LOC_HI -> P a) -> pj_locale m -> pj_locale m'.
-Proof.
-  intros P m m' AG HP [H|(j1 & j2 & j3 & j4 & j5 & j6 & H)]; [left|right; exists j1, j2, j3, j4, j5, j6].
-  - unfold LOC0 in *. eapply rw_cells_agree; [exact AG| exact H|]. intros a Ha. rewrite loc0_cells_size in Ha. apply HP. lia.
-  - eapply rw_cells_agree; [exact AG| exact H|]. intros a Ha. rewrite locb_cells_size in Ha. apply HP. lia.
-Qed.
-Lemma pj_consts_agree : forall P m m',
-  agree_on P m m' -> (forall a, (PJ_RELRO_LO <= a < PJ_RELRO_SSP) \/ (PJ_RELRO_SSP + 8 <= a < PJ_RELRO_HI) \/ (PJ_LOCLOCK <= a < PJ_LOCLOCK + 4) -> P a) ->
-  pj_consts m -> pj_consts m'.
-Proof.
-  intros P m m' AG HP (C1 & C2 & C3 & C4 & C5 & C6). unfold pj_consts.
-  split; [eapply rw_cells_agree; [exact AG| exact C1| intros a Ha; apply HP; cbn in Ha; lia]|].
-  split; [eapply rw_cells_agree; [exact AG| exact C2| intros a Ha; apply HP; cbn in Ha; lia]|].
-  split; [eapply rw_cells_agree; [exact AG| exact C3| intros a Ha; apply HP; cbn in Ha; lia]|].
-  split; [eapply rw_cells_agree; [exact AG| exact C4| intros a Ha; apply HP; cbn in Ha; lia]|].
-  split; [eapply rw_cells_agree; [exact AG| exact C5| intros a Ha; apply HP; cbn in Ha; lia]|].
-  intros a Ha. destruct (AG a ltac:(lia) ltac:(apply HP; lia)) as [E _]. rewrite E. apply C6. exact Ha.
-Qed.
-
-Lemma lx_statics_agree : forall P m m',
-  agree_on P m m' -> (forall a, lxs_addr a -> P a) -> lx_statics m -> lx_statics m'.
-Proof.
-  intros P m m' AG HP (A1 & A2 & A3 & A4 & A5 & A6). unfold lx_statics.
-  assert (A6' : pj_consts m') by (eapply pj_consts_agree; [exact AG| | exact A6]; intros a Ha; apply HP; unfold lxs_addr; lia).
-  unfold lxs_addr, LX_GOT_STDERR, LX_STDERR_PTR, SJ_GOT_NOTHROW, SJ_IMPL_VT24, SJ_DPI_VPTR in *.
-  Ltac tr AG HP A := eapply rw_cells_agree; [exact AG| exact A| intros a Ha; apply HP; cbn in Ha; lia].
-  split; [tr AG HP A1|]. split; [tr AG HP A2|]. split; [tr AG HP A3|]. split; [tr AG HP A4|]. split; [tr AG HP A5| exact A6'].
-Qed.
-
-Lemma sj_statics_agree : forall P m m' v,
-  agree_on P m m' -> (forall a, sjs_addr a -> P a) -> sj_statics m v -> sj_statics m' v.
-Proof.
-  intros P m m' v AG HP [H L]. unfold sj_statics, sjs_addr, SJ_STATICS_LO, SJ_STATICS_HI in *.
-  split; [eapply rw_cells_agree; [exact AG| exact H|]; intros a Ha; apply HP; destruct v; cbn in Ha; lia|].
-  eapply pj_locale_agree; [exact AG| | exact L]. intros a Ha. apply HP. lia.
-Qed.
-
-Lemma rauxv_ok_agree : forall P m m' B,
-  agree_on P m m' -> (forall a, B <= a -> P a) -> (forall a, RAUXV_CELL <= a < RAUXV_CELL + 8 -> P a) ->
-  rauxv_ok m B -> rauxv_ok m' B.
-Proof.
-  intros P m m' B AG HP HC (av & x3 & x4 & x5 & x16 & x6 & x11 & x12 & x23 & rnd & C & A1 & A2 & H).
-  exists av, x3, x4, x5, x16, x6, x11, x12, x23, rnd. split; [|split; [|split; [|exact H]]].
-  - eapply rw_cells_agree; [exact AG| exact C|]. intros a Ha. apply HC. cbn in Ha. lia.
-  - eapply bytes_at_agree; [exact AG| exact A1|]. intros a Ha. apply HP. lia.
-  - eapply bytes_at_agree; [exact AG| exact A2|]. intros a Ha. apply HP. cbn in Ha. lia.
-Qed.
-
-Lemma stdout_addr_client : forall LB SP X a, stdout_addr a -> ~ rin_ivs X a -> lx_client LB SP X a.
-Proof.
-  intros LB SP X a Ha Hx. split; [exact Hx|]. right; right. unfold stdout_addr, ralloc_static, RMallocRep.RLIBC, RMallocRep.RCTX, RMallocRep.RERRNO, RMallocRep.RATP, RMallocRep.RSSP_GUARD, RMallocRep.RGOT_SSP in *. lia.
-Qed.
-Lemma stderr_addr_client : forall LB SP X a, stderr_addr a -> ~ rin_ivs X a -> lx_client LB SP X a.
-Proof.
-  intros LB SP X a Ha Hx. split; [exact Hx|]. right; right. unfold stderr_addr, ralloc_static, RMallocRep.RLIBC, RMallocRep.RCTX, RMallocRep.RERRNO, RMallocRep.RATP, RMallocRep.RSSP_GUARD, RMallocRep.RGOT_SSP in *. lia.
-Qed.
-Lemma lxs_addr_client : forall LB SP X a, lxs_addr a -> ~ rin_ivs X a -> lx_client LB SP X a.
-Proof.
-  intros LB SP X a Ha Hx. split; [exact Hx|]. right; right. unfold lxs_addr, ralloc_static, RMallocRep.RLIBC, RMallocRep.RCTX, RMallocRep.RERRNO, RMallocRep.RATP, RMallocRep.RSSP_GUARD, RMallocRep.RGOT_SSP,
-    LX_GOT_STDERR, LX_STDERR_PTR, SJ_GOT_NOTHROW, SJ_IMPL_VT24, SJ_DPI_VPTR in *. lia.
-Qed.
-Lemma sjs_addr_client : forall LB SP X a, sjs_addr a -> ~ rin_ivs X a -> lx_client LB SP X a.
-Proof.
-  intros LB SP X a Ha Hx. split; [exact Hx|]. right; right. unfold sjs_addr, ralloc_static, RMallocRep.RLIBC, RMallocRep.RCTX, RMallocRep.RERRNO, RMallocRep.RATP, RMallocRep.RSSP_GUARD, RMallocRep.RGOT_SSP, SJ_STATICS_LO, SJ_STATICS_HI in *. lia.
-Qed.
-Lemma stack_client : forall LB SP X a, SP <= a -> ~ rin_ivs X a -> lx_client LB SP X a.
-Proof. intros LB SP X a Ha Hx. split; [exact Hx| left; exact Ha]. Qed.
-Lemma block_client : forall LB SP X b a, In b LB -> blk_addr b <= a < blk_addr b + blk_size b -> ~ rin_ivs X a -> lx_client LB SP X a.
-Proof. intros LB SP X b a Hb Ha Hx. split; [exact Hx| right; left]. exists b. auto. Qed.
-
-Lemma implM_get_bind : forall {A} (f : PState -> M PState A) s Q ms,
-  implM psegs (f s) s Q ms -> implM psegs (mbind mget f) s Q ms.
-Proof. intros A f s Q ms H. unfold implM, mbind, mget in *. cbn. exact H. Qed.
-Lemma implM_ret_bind : forall {A B} (a : A) (f : A -> M PState B) s Q ms,
-  implM psegs (f a) s Q ms -> implM psegs (mbind (mret a) f) s Q ms.
-Proof. intros A B a f s Q ms H. unfold implM, mbind, mret in *. cbn. exact H. Qed.
-Lemma implM_upd_bind : forall {A} (g : PState -> PState) (k : unit -> M PState A) s Q ms,
-  implM psegs (k tt) (g s) Q ms -> implM psegs (mbind (mupd g) k) s Q ms.
-Proof. intros A g k s Q ms H. unfold implM, mbind, mupd in *. cbn. exact H. Qed.
-Lemma implM_if : forall {A} (b : bool) (t e : M PState A) s Q ms,
-  (b = true -> implM psegs t s Q ms) -> (b = false -> implM psegs e s Q ms) -> implM psegs (if b then t else e) s Q ms.
-Proof. intros A b t e s Q ms Ht He. destruct b; auto. Qed.
-
-Lemma implM_frame_pure : forall {A} (c : M PState A) s Q (phi : Prop) ms,
-  phi -> implM psegs c s Q ms -> implM psegs c s (fun a s' ms' => phi /\ Q a s' ms') ms.
-Proof. intros A c s Q phi ms Hphi H. eapply implM_mono; [exact H|]. intros; split; auto. Qed.
 
 Lemma bytes_at_read1 : forall m A bs (i : Z) b a,
   bytes_at psegs m A bs -> 0 <= i -> nth_error bs (Z.to_nat i) = Some b -> a = wa (A + i) ->
@@ -218,8 +45,6 @@ Proof.
   f_equal. rewrite E at 1. rewrite skipn_app, skipn_all2, Hl1, Nat.sub_diag by lia. reflexivity.
 Qed.
 
-Lemma to_bytes_length : forall l, length (to_bytes l) = length l.
-Proof. intros. unfold to_bytes. apply length_map. Qed.
 
 Lemma to_bytes_nth : forall (l : list Z) i c, nth_error l i = Some c -> nth_error (to_bytes l) i = Some (Z_to_bv 8 c).
 Proof. intros l i c H. unfold to_bytes. rewrite nth_error_map, H. reflexivity. Qed.
@@ -352,11 +177,6 @@ Definition RHEAP_blocks_disjoint_stmt : Prop := forall s LB m b1 b2,
   RHEAP s LB m -> In b1 LB -> In b2 LB -> blk_id b1 <> blk_id b2 ->
   blk_addr b1 + blk_size b1 <= blk_addr b2 \/ blk_addr b2 + blk_size b2 <= blk_addr b1.
 
-Lemma RHEAP_ssp : forall s LB m, RHEAP s LB m -> ssp_cells m rr_guard.
-Proof.
-  intros s LB m (st & LB0 & _ & _ & MR & _). destruct MR as (_ & _ & (G1 & G2 & G3 & G4 & G5 & G6) & _).
-  unfold ssp_cells, got_ssp, ssp_guard. unfold RMallocRep.RGOT_SSP, RMallocRep.RSSP_GUARD in G4, G5. split; [exact G4| exact G5].
-Qed.
 
 Lemma bptr_eqb_eq : forall p q : bptr, bptr_eqb p q = true <-> p = q.
 Proof.
@@ -374,4 +194,3 @@ Proof.
   - cbn. f_equal. apply IH; [intros Hin; apply NI; right; exact Hin| inversion ND'; assumption].
 Qed.
 End WithCeiling1.
-

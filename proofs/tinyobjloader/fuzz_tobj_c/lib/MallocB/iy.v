@@ -7,7 +7,8 @@ From stdpp Require bitvector.
 From LinuxProcessSemantics.LinuxProcessSem Require BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Prelude Instr Decode DecodeC Sem.
 From OssFuzzTheorems.tinyobjloader.fuzz_tobj_c.images Require AsanUbsan.
-From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require F0A_skel RefillModelP RefillBits io j4 CRefillJ DrainModel.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocA Require RefillBits.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require F0A_skel RefillModelP io j4 CRefillJ DrainModel.
 
 (* [comment removed for export] *)
 Module F0A_inst.
@@ -372,11 +373,12 @@ From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require CertMa
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ig.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require m8.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require it.
-From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillModel RefillModelP RefillBits.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocA Require RefillBits.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillModel RefillModelP.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ia.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillTR RefillJ.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require io.
-Import OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Geometry OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Budget OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Model OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RtCells OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Iface OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Inv OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.InvLaws OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.PrimCredit OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.PrimCreditLaws OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i2.PrimRoom OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i0.CertStackFree OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i1.CertStackMalloc OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i5.CertMallocS1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.CertMallocSP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.SpineMallocI OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ig.SpineMallocS1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.m8.SpineMallocS2 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.it.SpineMallocS5 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillModel OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillModelP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillBits OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ia.CertMallocSR OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillTR OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillJ OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.it.SpineMallocR1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.io.SpineMallocR2.
+Import OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Geometry OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Budget OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Model OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RtCells OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Iface OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.Inv OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.InvLaws OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.PrimCredit OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.PrimCreditLaws OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i2.PrimRoom OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i0.CertStackFree OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i1.CertStackMalloc OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i5.CertMallocS1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.CertMallocSP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.SpineMallocI OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ig.SpineMallocS1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.m8.SpineMallocS2 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.it.SpineMallocS5 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillModel OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillModelP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocA.RefillBits OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ia.CertMallocSR OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillTR OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillJ OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.it.SpineMallocR1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.io.SpineMallocR2.
 Import ListNotations.
 Close Scope bv_scope.
 Open Scope Z_scope.
@@ -1784,4 +1786,3 @@ Definition drain_contract_fE : Prop := ltac2:(tb__ "0|1|
 S59S81S26S17S4S30Q40A1A1S82R4A1S8aS2eS79S2eS7eS7R6R5R4A4S49Vn;A1R3R2A5S34S2eS3fR3R2S0S6S32S33A2M0S5S32S33S44Vn;A1S7fR6R5R4A3A4S1G0A1A3A5A3F_;Ftp;Frho;Fc;FKc;FA;").
 End DH.
 End DrainS.
-

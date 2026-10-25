@@ -1,6 +1,7 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From OssFuzzTheorems.Proofs.cgif.cgif_file_fuzzer.lib Require YZ00.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
@@ -152,7 +153,7 @@ eager_used (fixedin_destroyed_model addr n md) <= eager_used md.
 Proof.
 intros Hh A md addr len HAI HW Hal Hlen Hce n.
 pose proof (alloc_top_room (m_vmmaps md)) as Hcv. unfold two_pow_64, stack_max_size in Hcv. pose proof (u64_range addr) as Ra.
-pose proof (page_round_up_Z_bounds len ltac:(lia)) as PR. pose proof (page_round_up_Z_mod len) as PM. unfold page_size in PR, PM.
+pose proof (page_round_up_Z_bounds len ltac:(lia)) as PR. pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned len) as PM. unfold page_size in PR, PM.
 assert (Un : bv_unsigned n = page_round_up_Z len) by (unfold n; apply u64_lit; lia).
 pose proof HW as [(Wm & Wn & Wl & Wi) Ws]. pose proof HAI as (HH1 & HH2 & HH3 & HH4 & HH5).
 set (lo := bv_unsigned addr) in *. set (hi := lo + bv_unsigned n).
@@ -235,7 +236,7 @@ eager_used (restore_md flags addr n md) <= eager_used md.
 Proof.
 intros Hh A md flags addr len HAI HW Hnr Hal Hlen Hce n Hplace HAL.
 pose proof (alloc_top_room (m_vmmaps md)) as Hcv. unfold two_pow_64, stack_max_size in Hcv. pose proof (u64_range addr) as Ra.
-pose proof (page_round_up_Z_bounds len ltac:(lia)) as PR. pose proof (page_round_up_Z_mod len) as PM. unfold page_size in PR, PM.
+pose proof (page_round_up_Z_bounds len ltac:(lia)) as PR. pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned len) as PM. unfold page_size in PR, PM.
 assert (Un : bv_unsigned n = page_round_up_Z len) by (unfold n; apply u64_lit; lia).
 pose proof HW as [(Wm & Wn & Wl & Wi) Ws]. pose proof HAI as (HH1 & HH2 & HH3 & HH4 & HH5).
 set (lo := bv_unsigned addr) in *. set (hi := lo + bv_unsigned n).

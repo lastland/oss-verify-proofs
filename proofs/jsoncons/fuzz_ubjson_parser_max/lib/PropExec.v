@@ -1,11 +1,12 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require Export ZBits.
 From OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib Require BvWfKernel.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType StackLayout State Run.
-From OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib Require Import PlacementSearch.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem.
 Import ListNotations.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
@@ -45,48 +46,12 @@ Lemma arg_reg_1 : ltac2:(TCodec.tc2 tcn__PropExec "B'C'WAy5%211&W@&U8+:&UBu1%211
 Proof. apply bv_eq. reflexivity. Qed.
 Lemma arg_reg_2 : ltac2:(TCodec.tc2 tcn__PropExec "B'C'WAy5%211&W@&U8+:&UBu2%211%5241%7291(W?+<(A%33=21/01=%A3>61").
 Proof. apply bv_eq. reflexivity. Qed.
-Lemma Z_testbit_high : ltac2:(TCodec.tc2 tcn__PropExec "K'N&U;zr3%3221'B&U=&UD+2r4%3221%5281%7281r5%=21;'C'5&UH%1259(7%53421p071p0:1p0C1p]8H1p[FI1p]FJ1").
-Proof.
-intros n a k Hn [Ha1 Ha2] Hk.
-exact (proj1 (Z.bounded_iff_bits_nonneg n a Hn Ha1) Ha2 k Hk).
-Qed.
-Lemma Z_bounded_by_bits : ltac2:(TCodec.tc2 tcn__PropExec "K'N&U;zr2%3221r5r1%6221'C'5&UH%1268(7%53421p071p]8?1&U=r4&UD+2%221?%5241p071p0C1p0D1p[FI1p]FJ1").
-Proof.
-intros n a Hn Ha Hb. exact (proj2 (Z.bounded_iff_bits_nonneg n a Hn Ha) Hb).
-Qed.
-Lemma Z_land_range : ltac2:(TCodec.tc2 tcn__PropExec "H'N'B&U;zr2%3221&U=&UD+2+R0%3221%5271%;271&U:r4r3%3221%?2>1%<228%B221p0?1p091p[NF1p[FG1").
-Proof.
-intros a b Ha Hb. split; [apply Z.land_nonneg; lia|].
-apply Z_bounded_by_bits; [lia| apply Z.land_nonneg; lia |].
-intros k Hk. rewrite Z.land_spec.
-rewrite (Z_testbit_high 64 a k) by lia. reflexivity.
-Qed.
-Lemma Z_lor_range : ltac2:(TCodec.tc2 tcn__PropExec "H'N'B&U;zr2%3221&U=&UD+2+R0%3221%5271%;271&U<r4r3%3221%?2>1%<228%B221p081p091p[NF1p[FG1").
-Proof.
-intros a b Ha Hb. split; [apply Z.lor_nonneg; lia|].
-apply Z_bounded_by_bits; [lia| apply Z.lor_nonneg; lia |].
-intros k Hk. rewrite Z.lor_spec.
-rewrite (Z_testbit_high 64 a k) by lia.
-rewrite (Z_testbit_high 64 b k) by lia.
-reflexivity.
-Qed.
-Lemma Z_lxor_range : ltac2:(TCodec.tc2 tcn__PropExec "H'N'B&U;zr2%3221&U=&UD+2+R0%3221%5271%;271&U>r4r3%3221%?2>1%<228%B221p081p091p[NF1p[FG1").
-Proof.
-intros a b Ha Hb. split; [apply Z.lxor_nonneg; lia|].
-apply Z_bounded_by_bits; [lia| apply Z.lxor_nonneg; lia |].
-intros k Hk. rewrite Z.lxor_spec.
-rewrite (Z_testbit_high 64 a k) by lia.
-rewrite (Z_testbit_high 64 b k) by lia.
-reflexivity.
-Qed.
-Lemma Z_shiftr_range : ltac2:(TCodec.tc2 tcn__PropExec "H'N'B&U;zr2%3221&U=&UD+2+R0%3221%5271%;271&UFr4r3%3221%?2>1%<228%B221p0?1p091p]8F1p[FG1").
-Proof.
-intros a k Ha Hk. rewrite Z.shiftr_div_pow2 by lia.
-pose proof (Z.pow_pos_nonneg 2 k ltac:(lia) Hk).
-split; [apply Z.div_pos; lia|].
-apply Z.le_lt_trans with a; [|lia].
-apply Z.div_le_upper_bound; nia.
-Qed.
+
+
+
+
+
+
 Lemma bv_swrap_add_idemp_l : ltac2:(TCodec.tc2 tcn__PropExec "B'M'N'C&WJr3&U8&WLr2%2241r1%5221%8271%7253%:291%<3=31p`:>1p`6?1p]FA1").
 Proof.
 intros n x y. unfold bv_swrap. f_equal.

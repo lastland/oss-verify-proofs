@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require BvBase State Monad Specs.
 From OssFuzzTheorems.Proofs.json_c.json_object_fuzzer.lib Require QQny QWXq.
@@ -11,7 +12,7 @@ Module Mq0.
 
 Import Stdlib.ZArith.ZArith Stdlib.Lists.List Stdlib.Bool.Bool Stdlib.micromega.Lia.
 Import LinuxProcessSemantics.LinuxProcessSem.BvBase LinuxProcessSemantics.LinuxProcessSem.State LinuxProcessSemantics.LinuxProcessSem.Monad LinuxProcessSemantics.LinuxProcessSem.Specs.
-Import QQny.Mq0 QWXq.Mq1.
+Import QQny.Mq0 OssFuzzTheorems.Proofs.Shared.PlacementSearch.
 Import ListNotations.
 Open Scope bv_scope.
 Local Open Scope Z_scope.
@@ -119,7 +120,7 @@ unfold iv_overlap in Hov. rewrite Hcu, Hnu in Hov.
 apply andb_true_iff in Hov as [H1 H2]. apply Z.ltb_lt in H1. apply Z.ltb_lt in H2.
 set (B := bv_unsigned b) in *. set (S := bv_unsigned s) in *.
 set (c' := page_round_up_Z (B + S)).
-pose proof (page_round_up_Z_ge (B + S)) as Hge.
+pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (B + S)) as Hge.
 assert (Hle : c' <= B + S + 4095).
 { unfold c', page_round_up_Z, page_size.
 pose proof (Z.mul_div_le (B + S + 4096 - 1) 4096 ltac:(lia)). lia. }
@@ -127,7 +128,7 @@ assert (Hlive : live_at c (b, s) = true) by (unfold live_at; cbn; apply Z.ltb_lt
 assert (Hdead : live_at c' (b, s) = false) by (unfold live_at; cbn; apply Z.ltb_ge; lia).
 destruct (live_weight_step nZ L c c' b s HnZ ltac:(lia) Hin Hlive Hdead) as [Hws Hlen].
 exists c'. split; [|exact Hlen].
-split; [apply page_round_up_Z_aligned|].
+split; [apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned|].
 split; lia.
 Qed.
 
@@ -856,4 +857,3 @@ to_wexit_ch ms bufs code.
 Hypothesis Hfd32 : fd32 fd = fd.
 
 End WithSegsCh.
-

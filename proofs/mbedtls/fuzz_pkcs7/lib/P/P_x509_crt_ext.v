@@ -1,6 +1,7 @@
 (* Machine-generated data computed from the task's compiled program image (decoder-built tables and encoded data blocks); may contain fragments of third-party object code - see NOTICE. No Anthropic licence header applies to this file. *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require Import ZBits.
 From Stdlib Require Import ZArith NArith List Lia Bool Permutation.
 From OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib.LX Require Import LxExpr LxDec LxMem LxStep LxRun LxDenot LxSoundRun LxSum LxSoundSum LxTac.
 From OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib.LXP Require Import LxP_Sums1 LxP_SumsHeapO LxP_SumsCrt2.
@@ -1186,7 +1187,7 @@ Section Walk.
         pose proof (Z.land_nonneg (bv_unsigned (sx32 etl)) (bv_unsigned (sx32 (x_et X)))) as LN.
         assert (KD0 : Z.land (bv_unsigned (sx32 etl)) (bv_unsigned (sx32 (x_et X))) = 0).
         { first [apply land64_zero in KD; [exact KD| ] | apply mod64_zero in KD; [exact KD|] | exact KD].
-          all: pose proof (PropExec.Z_land_range (bv_unsigned (sx32 etl)) (bv_unsigned (sx32 (x_et X))) ltac:(lia) ltac:(lia)); lia. }
+          all: pose proof (OssFuzzTheorems.Proofs.Shared.ZBits.Z_land_range (bv_unsigned (sx32 etl)) (bv_unsigned (sx32 (x_et X))) ltac:(lia) ltac:(lia)); lia. }
         clear KD.
         zstep.                                     (* [comment removed for export] *)
         pose proof (conj FR (conj XV (conj XS (conj XK (conj XA (conj XW (conj XP (conj XU (conj XN (conj HHc (conj BYc (conj PPc I)))))))))))) as CBOX.

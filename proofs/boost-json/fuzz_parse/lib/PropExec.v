@@ -1,5 +1,6 @@
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require Export ZBits.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType StackLayout State Run.
@@ -97,53 +98,17 @@ Proof. apply bv_eq. reflexivity. Qed.
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
-Lemma Z_testbit_high : ltac2:(zQ "90!hmc!hr4!ua!hra!hs2!hl7!hs8!hp2!hse>1n$0>1a$0>1k$0>0@2$1Z^3>0@2$4@2$1Z^3@2$6^3@2$7+2^4>0@2$1^5^3@3$5$2@2$8^5^4$3").
-Proof.
-  intros n a k Hn [Ha1 Ha2] Hk.
-  exact (proj1 (Z.bounded_iff_bits_nonneg n a Hn Ha1) Ha2 k Hk).
-Qed.
 
-Lemma Z_bounded_by_bits : ltac2:(zQ "80!hmc!hr4!ua!hra!hl7!hs8!hp2!hse>1n$0>1a$0>0@2$1Z^2>0@2$1Z^2>0>1k$0>0@2$1^5^1@3$4$2@2$7^5^2$3@2$5^4@2$6+2^5").
-Proof.
-  intros n a Hn Ha Hb. exact (proj2 (Z.bounded_iff_bits_nonneg n a Hn Ha) Hb).
-Qed.
 
-Lemma Z_land_range : ltac2:(zQ "60!hr4!hs2!hmc!ht9!hs8!hp2>1a$2>1b$2>0@2$1@2$0Z^2@2$4^2@2$5+2+k0>0@2$0Z^2@2$1@2$0Z@2$3^4^3@2$4@2$3^4^3@2$5+2+k0").
-Proof.
-  intros a b Ha Hb. split; [apply Z.land_nonneg; lia|].
-  apply Z_bounded_by_bits; [lia| apply Z.land_nonneg; lia |].
-  intros k Hk. rewrite Z.land_spec.
-  rewrite (Z_testbit_high 64 a k) by lia. reflexivity.
-Qed.
 
-Lemma Z_lor_range : ltac2:(zQ "61!hs2!hr4!hs8!hp2!hmc!hu1&@2$0@2$1Z^2@2$2^2@2$3+2+k0>1a$4>1b$4>0~0>0~0@2$0@2$1Z@2$5^4^3@2$2@2$5^4^3@2$3+2+k0").
-Proof.
-  intros a b Ha Hb. split; [apply Z.lor_nonneg; lia|].
-  apply Z_bounded_by_bits; [lia| apply Z.lor_nonneg; lia |].
-  intros k Hk. rewrite Z.lor_spec.
-  rewrite (Z_testbit_high 64 a k) by lia.
-  rewrite (Z_testbit_high 64 b k) by lia.
-  reflexivity.
-Qed.
 
-Lemma Z_lxor_range : ltac2:(zQ "61!hs2!hr4!hs8!hp2!hmc!hu8&@2$0@2$1Z^2@2$2^2@2$3+2+k0>1a$4>1b$4>0~0>0~0@2$0@2$1Z@2$5^4^3@2$2@2$5^4^3@2$3+2+k0").
-Proof.
-  intros a b Ha Hb. split; [apply Z.lxor_nonneg; lia|].
-  apply Z_bounded_by_bits; [lia| apply Z.lxor_nonneg; lia |].
-  intros k Hk. rewrite Z.lxor_spec.
-  rewrite (Z_testbit_high 64 a k) by lia.
-  rewrite (Z_testbit_high 64 b k) by lia.
-  reflexivity.
-Qed.
 
-Lemma Z_shiftr_range : ltac2:(zQ "60!hr4!hs2!hmc!hs8!hp2!hv0>1a$2>1k$2>0@2$1@2$0Z^2@2$3^2@2$4+2+k0>0@2$0Z^2@2$1@2$0Z@2$5^4^3@2$3@2$5^4^3@2$4+2+k0").
-Proof.
-  intros a k Ha Hk. rewrite Z.shiftr_div_pow2 by lia.
-  pose proof (Z.pow_pos_nonneg 2 k ltac:(lia) Hk).
-  split; [apply Z.div_pos; lia|].
-  apply Z.le_lt_trans with a; [|lia].
-  apply Z.div_le_upper_bound; nia.
-Qed.
+
+
+
+
+
+
 
 (* [comment removed for export] *)
 Lemma bv_swrap_add_idemp_l : ltac2:(zQ "60!hmc!hq3!hva!hl7!ig5!hp9>1n$4>1x$0>1y$0@3$3$0@2$2^3@2$1@2$5^3^2^1@2$2^3@2$1^2^1").

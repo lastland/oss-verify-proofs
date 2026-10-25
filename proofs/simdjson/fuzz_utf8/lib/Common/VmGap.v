@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
@@ -25,17 +26,7 @@ Proof.
 Qed.
 
 (* [comment removed for export] *)
-Lemma page_round_up_Z_le_aligned : forall x B,
-  x <= B -> B mod page_size = 0 -> page_round_up_Z x <= B.
-Proof.
-  intros x B Hx HB. unfold page_round_up_Z, page_size in *.
-  pose proof (Z.div_mod (x + 4096 - 1) 4096 ltac:(lia)) as Hdm.
-  pose proof (Z.mod_pos_bound (x + 4096 - 1) 4096 ltac:(lia)) as Hmb.
-  pose proof (Z.div_mod B 4096 ltac:(lia)) as HBd.
-  rewrite HB in HBd.
-  assert ((x + 4096 - 1) / 4096 <= B / 4096) by lia.
-  lia.
-Qed.
+
 
 (* [comment removed for export] *)
 Lemma max_below : forall (l : list Z) (B x0 : Z),
@@ -138,7 +129,7 @@ Proof.
       assert (Hc : page_round_up_Z (bv_unsigned b + bv_unsigned sz) <= m).
       { apply Hm_max.
         - right. apply in_map_iff. exists (b, sz). split; [reflexivity | exact Hin].
-        - apply page_round_up_Z_le_aligned; [exact Hend | exact Halign]. }
+        - apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_le; [exact Hend | exact Halign]. }
       pose proof (page_round_up_Z_spec (bv_unsigned b + bv_unsigned sz)) as [Hr _].
       apply andb_false_iff. left. apply Z.ltb_ge. lia.
     - (* [comment removed for export] *)

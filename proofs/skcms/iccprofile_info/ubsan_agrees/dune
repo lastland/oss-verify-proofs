@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.skcms.iccprofile_info.ubsan_agrees)
  (package rocq-oss-fuzz-theorems-skcms-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.skcms.iccprofile_info OssFuzzTheorems.Proofs.skcms.iccprofile_info.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.skcms.iccprofile_info OssFuzzTheorems.Proofs.skcms.iccprofile_info.lib))

@@ -28,8 +28,12 @@ For each harness that it checks, `oft check`:
 1. checks every binary against its SHA-256 in `harness.yaml`;
 2. builds the memory images from the ELF files, then `Images.v`,
    `Statements.v` and `Characterise.v`;
-3. compiles the harness's proof library, `proofs/<project>/<harness>/lib/`,
-   if it has one (once), and then each proof. In CI this runs under
+3. compiles the shared proof library, `proofs/lib/`, when present, then the
+   harness's proof library, `proofs/<project>/<harness>/lib/`, if it has one,
+   and then each proof. Each library is compiled from source once per check
+   run; a shared-library failure fails every dependent proof. The shared
+   namespace, `OssFuzzTheorems.Proofs.Shared`, is on the loadpath of harness
+   libraries, proofs, wrappers and `rocqchk`. In CI this runs under
    `docker run --network none`, so it has no network;
 4. compiles a wrapper that it writes itself. The wrapper gives the proof's
    theorem the type of the statement, and prints what the result assumes:
@@ -43,7 +47,7 @@ For each harness that it checks, `oft check`:
        Print Assumptions certified.
 
    A proof of any other statement does not type-check. The proof and its
-   library are compiled from their `.v` files only, against the statements
+   libraries are compiled from their `.v` files only, against the statements
    that `oft check` built, so a proof written against an edited statement does
    not type-check either;
 5. audits the output of `Print Assumptions` (below).

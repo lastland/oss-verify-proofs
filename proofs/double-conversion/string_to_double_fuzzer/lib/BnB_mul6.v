@@ -78,7 +78,7 @@ Proof.
     assert (HF5 : 5 <= 5 ^ r) by (change 5 with (5 ^ 1) at 1; apply Z.pow_le_mono_r; lia).
     assert (HF12 : 5 ^ r <= 244140625) by (change 244140625 with (5 ^ 12); apply Z.pow_le_mono_r; lia).
     assert (Hcell : exists bs, rdn SEGS_B m (Z_to_bv 64 (145372 + 4 * r)) 4 = Some bs /\ bytes_le_to_Z bs = 5 ^ r).
-    { rewrite <- (five_tbl_nth r) by lia. eapply (kc_of_arr32_i _ _ _ _ (Z.to_nat (r - 1))); [exact Htbl | cbn; lia | lia | reflexivity]. }
+    { rewrite <- (FiveTbl.five_tbl_nth r) by lia. eapply (kc_of_arr32_i _ _ _ _ (Z.to_nat (r - 1))); [exact Htbl | cbn; lia | lia | reflexivity]. }
     zx_run SEGS_B constr:(CTX (vi_regs ++ [Some (IMG, HIE - 516); Some (1, 12); Some (5, 244140625)]) (@nil kcell) (@nil kwin))
       30%nat [0x0ab304; 0x0aa918] (SCR [] [ZL 0; ZV 34])
       constr:([(10%bv : reg, ZV 33); (8%bv : reg, ZV 32); (20%bv : reg, ZL SHA)]) [o; r; 5 ^ r]

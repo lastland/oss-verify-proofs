@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.asan_agrees)
  (package rocq-oss-fuzz-theorems-yajl-ruby-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.yajl_ruby.json_fuzzer OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.yajl_ruby.json_fuzzer OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib))

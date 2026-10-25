@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
@@ -113,8 +114,7 @@ Proof.
   pose proof (Z.mod_pos_bound (x + page_size - 1) page_size ltac:(lia)). lia.
 Qed.
 
-Lemma page_round_up_Z_aligned' : forall x, page_round_up_Z x mod page_size = 0.
-Proof. intros x. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 
 Lemma bottomup_floor_aligned : bottomup_floor mod page_size = 0.
 Proof. rewrite bottomup_floor_val. reflexivity. Qed.
@@ -175,7 +175,7 @@ Proof.
     apply (IH lo').
     + lia.
     + right. exists e. split; [exact Hin| reflexivity].
-    + apply page_round_up_Z_aligned'.
+    + apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned.
     + lia.
     + lia.
 Qed.

@@ -1,6 +1,7 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Specs Run.
 From OssFuzzTheorems.Proofs.zstd.fse_read_ncount.lib.Lib Require Import MState.
@@ -75,8 +76,7 @@ Proof.
 intros z. unfold page_round_up_Z. rewrite page_size_4096.
 pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)). pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)). lia.
 Qed.
-Lemma page_round_up_Z_aligned' : forall z, page_round_up_Z z mod 4096 = 0.
-Proof. intros z. unfold page_round_up_Z. rewrite page_size_4096. apply Z_mod_mult. Qed.
+
 Lemma FLOOR_aligned : FLOOR mod 4096 = 0.
 Proof. rewrite FLOOR_val. reflexivity. Qed.
 Section Walk.
@@ -127,7 +127,7 @@ assert (Hcc : c <= c') by lia.
 destruct (filter_above_drop c c' maps e Hcc Hin Hab R1) as [D1 D2].
 apply (IH c').
 + lia.
-+ apply page_round_up_Z_aligned'.
++ apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned.
 + lia.
 + unfold pot in *. unfold ghi in *. pose proof (gsz_nonneg e).
 pose proof (sum_sz_nonneg (List.filter (above c') maps)). nia.

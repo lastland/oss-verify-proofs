@@ -4,11 +4,12 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State StackLayout Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys Require Import Syscall Uapi.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
-From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.Common Require Footprint__Common. Import OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.Common.Footprint__Common.PlacementSearch.
+From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.Common Require Footprint__Common. Import OssFuzzTheorems.Proofs.Shared.PlacementSearch.
 (* [comment removed for export] *)
 Unset Lia Cache.
 Import ListNotations.
@@ -64,12 +65,7 @@ Lemma init_sp_ok_mkVmMapsFull : forall h r m na sb b l mb,
 Proof. intros. unfold init_sp_ok in *. cbn. assumption. Qed.
 
 (* [comment removed for export] *)
-Lemma page_round_up_Z_ge_all : forall z, z <= page_round_up_Z z.
-Proof.
-  intros z. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-  pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)) as Hr. lia.
-Qed.
+
 
 (* [comment removed for export] *)
 Lemma mmap_off_aligned_b_0 : mmap_off_aligned_b (Z_to_bv 64 0) = true.
@@ -88,8 +84,7 @@ Proof.
 Qed.
 
 (* [comment removed for export] *)
-Lemma page_round_up_Z_aligned' : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 
 
 (* [comment removed for export] *)

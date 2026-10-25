@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import
   BvBase RiscvSemantics MemImageType StackLayout Fs State Monad Specs Run.
@@ -388,8 +389,7 @@ Qed.
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
-Lemma page_round_up_Z_mod : forall z, page_round_up_Z z mod 4096 = 0.
-Proof. intros z. unfold page_round_up_Z, page_size. apply Z.mod_mul. llia. Qed.
+
 
 Lemma grant_ok_vm_spec : forall h a n, grant_ok_vm h a n = true <->
   (u a mod 4096 = 0 /\ 0 < u a /\ u a + n <= alloc_top h /\

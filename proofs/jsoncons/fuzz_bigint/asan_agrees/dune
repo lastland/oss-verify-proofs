@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.jsoncons.fuzz_bigint.asan_agrees)
  (package rocq-oss-fuzz-theorems-jsoncons-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.jsoncons.fuzz_bigint OssFuzzTheorems.Proofs.jsoncons.fuzz_bigint.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.jsoncons.fuzz_bigint OssFuzzTheorems.Proofs.jsoncons.fuzz_bigint.lib))

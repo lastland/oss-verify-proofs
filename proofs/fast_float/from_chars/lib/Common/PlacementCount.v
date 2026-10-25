@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase Fs State.
 Import ListNotations.
@@ -99,8 +100,7 @@ Proof.
   - cbn in H. destruct (IH lo n H) as (p & Hin & Hov). exists p. split; [now right | exact Hov].
 Qed.
 
-Lemma page_round_up_Z_aligned' : forall z, (page_round_up_Z z mod page_size = 0)%Z.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 
 Lemma page_round_up_Z_bounds : forall z, (z <= page_round_up_Z z <= z + page_size - 1)%Z.
 Proof.
@@ -148,7 +148,7 @@ Proof.
       pose proof (bv_unsigned_in_range 64 a). pose proof (bv_unsigned_in_range 64 s).
       destruct (IH (remove_entry (a, s) L) lo' ltac:(lia)) as (g & Hg1 & Hg2 & Hg3 & Hg4).
       * fold lo'. lia.
-      * apply page_round_up_Z_aligned'.
+      * apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned.
       * exact HnZ.
       * exact Hhi.
       * fold lo'. unfold page_size in *. nia.

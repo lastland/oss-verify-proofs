@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType Fs State Monad Specs Run.
@@ -734,7 +735,7 @@ Proof using Hwx Hsegs.
   destruct (Hm _ HPm) as (Hsvc & H11 & H12 & H13 & H15 & HKa). rewrite restrict_svc in Hsvc. rewrite restrict_areg in H11, H12, H13, H15.
   destruct (HM _ HPMmo) as (Hwf & Hlim & Hgap & Hbud & HKM).
   set (nZ := page_round_up_Z len) in *. set (n := Z_to_bv 64 nZ) in *.
-  assert (HnZ : 0 <= nZ) by (unfold nZ; pose proof (page_round_up_Z_ge_all len); lia).
+  assert (HnZ : 0 <= nZ) by (unfold nZ; pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len); lia).
   destruct Hgap as (a0 & G1 & G2 & G3 & G4).   (* [comment removed for export] *)
   pose proof (alloc_top_room (m_vmmaps mo)) as Hroom. unfold two_pow_64, stack_max_size in Hroom.
   assert (Hnsmall : nZ < 2^64) by (pose proof (u64_range a0); lia).
@@ -796,7 +797,7 @@ Proof.
   split; [| intros [->| [Ho _]]; [| exact Ho]].
   2:{
   pose proof (alloc_top_room (m_vmmaps mo)) as Hroom. unfold two_pow_64, stack_max_size in Hroom.
-  assert (HnZ : len <= page_round_up_Z len) by apply page_round_up_Z_ge_all.
+  assert (HnZ : len <= page_round_up_Z len) by apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge.
   rewrite syscall_spec_222 by reflexivity. rewrite in_a0_si, in_a1_si, in_a2_si, in_a3_si, in_a4_si, in_a5_si, H10, H11, H12, H13, H15.
   unfold mmap_spec.
   assert (E1 : mmap_off_aligned_b (Z_to_bv 64 0) = true) by (vm_compute; reflexivity).
@@ -819,7 +820,7 @@ Proof.
     split; [reflexivity|]. split; reflexivity. }
   intros Ho. pose proof Ho as Ho0.
   pose proof (alloc_top_room (m_vmmaps mo)) as Hroom. unfold two_pow_64, stack_max_size in Hroom.
-  assert (HnZ : len <= page_round_up_Z len) by apply page_round_up_Z_ge_all.
+  assert (HnZ : len <= page_round_up_Z len) by apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge.
   rewrite syscall_spec_222 in Ho by reflexivity. rewrite in_a0_si, in_a1_si, in_a2_si, in_a3_si, in_a4_si, in_a5_si, H10, H11, H12, H13, H15 in Ho.
   unfold mmap_spec in Ho.
   assert (E1 : mmap_off_aligned_b (Z_to_bv 64 0) = true) by (vm_compute; reflexivity).
@@ -859,7 +860,7 @@ Lemma req_facts : forall mo addr len, 0 < len < 2^64 -> 0 < addr -> addr mod pag
 Proof.
   intros mo addr len Hlen Hpos Hal Htop.
   pose proof (alloc_top_room (m_vmmaps mo)) as Hroom. unfold two_pow_64, stack_max_size in Hroom.
-  pose proof (page_round_up_Z_ge_all len). pose proof (page_round_up_Z_aligned' len) as Hnl. unfold page_size in Hnl.
+  pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len). pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned len) as Hnl. unfold page_size in Hnl.
   repeat split; try (apply unsigned_lit); lia.
 Qed.
 
@@ -1024,7 +1025,7 @@ Proof using Hwx Hsegs.
   pose proof Hmc as (HAwf & HMInv & Hh & Hr & Ht).
   destruct (Hm _ HPm) as (Hsvc & H10 & H11 & HK). rewrite restrict_svc in Hsvc. rewrite restrict_areg in H10, H11.
   destruct (HM _ HPMmo) as (Hwf & Hhas & Hbud & HKM).
-  pose proof (page_round_up_Z_ge_all len). pose proof (page_round_up_Z_aligned' len) as Hnl. unfold page_size in Hnl, Hal. unfold TASK_SIZE in Htask.
+  pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len). pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned len) as Hnl. unfold page_size in Hnl, Hal. unfold TASK_SIZE in Htask.
   set (nZ := page_round_up_Z len) in *. set (a := Z_to_bv 64 addr) in *. set (n := Z_to_bv 64 nZ) in *.
   assert (Ea : bv_unsigned a = addr) by (apply unsigned_lit; lia). assert (En : bv_unsigned n = nZ) by (apply unsigned_lit; lia).
   pose proof Hwf as (Wm & Wn & Wl & _).

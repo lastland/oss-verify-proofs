@@ -16,12 +16,12 @@ Lemma icpt_frame_agree : forall (m m' : mem) usp ra s0 s1 s2 s3 s4 s5, icpt_fram
   (forall a : word, usp - 2128 <= bv_unsigned a < usp -> m' a = m a) -> icpt_frame m' usp ra s0 s1 s2 s3 s4 s5.
 Proof.
   intros m m' usp ra s0 s1 s2 s3 s4 s5 (FRs & (jp & FRp) & FRt & (wsb & TB & HTB) & (w & FRb)) AG.
-  split; [exact (D_kit.rw_cells_agree_nw bsegs m m' _ _ FRs ltac:(intros a Ha; apply AG; cbn [cells_size csize Nat.add] in Ha; lia))|].
-  split; [exists jp; exact (D_kit.rw_cells_agree_nw bsegs m m' _ _ FRp ltac:(intros a Ha; apply AG; cbn [cells_size csize Nat.add] in Ha; lia))|].
-  split; [exact (D_kit.rw_cells_agree_nw bsegs m m' _ _ FRt ltac:(intros a Ha; apply AG; cbn [cells_size csize Nat.add] in Ha; lia))|].
+  split; [exact (rw_cells_agree_nw bsegs m m' _ _ FRs ltac:(intros a Ha; apply AG; cbn [cells_size csize Nat.add] in Ha; lia))|].
+  split; [exists jp; exact (rw_cells_agree_nw bsegs m m' _ _ FRp ltac:(intros a Ha; apply AG; cbn [cells_size csize Nat.add] in Ha; lia))|].
+  split; [exact (rw_cells_agree_nw bsegs m m' _ _ FRt ltac:(intros a Ha; apply AG; cbn [cells_size csize Nat.add] in Ha; lia))|].
   split; [exists wsb; split; [|exact HTB];
-          exact (D_kit.u64arr_agree_nw bsegs m m' _ _ TB ltac:(intros a Ha; apply AG; rewrite HTB in Ha; cbn in Ha; lia))|].
-  exists w. exact (D_kit.rw_cells_agree_nw bsegs m m' _ _ FRb ltac:(intros a Ha; apply AG; cbn [cells_size csize Nat.add] in Ha; lia)).
+          exact (u64arr_agree_nw bsegs m m' _ _ TB ltac:(intros a Ha; apply AG; rewrite HTB in Ha; cbn in Ha; lia))|].
+  exists w. exact (rw_cells_agree_nw bsegs m m' _ _ FRb ltac:(intros a Ha; apply AG; cbn [cells_size csize Nat.add] in Ha; lia)).
 Qed.
 
 Section RetP.

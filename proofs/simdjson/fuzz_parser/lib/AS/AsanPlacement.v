@@ -7,7 +7,7 @@
 
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
-From OssFuzzTheorems.Proofs.simdjson.fuzz_parser.lib.AS Require Import PlacementSearch.  (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.  (* [comment removed for export] *)
 (* [comment removed for export] *)
 Unset Lia Cache.
 Import ListNotations.

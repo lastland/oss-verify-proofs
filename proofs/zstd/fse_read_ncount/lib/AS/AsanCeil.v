@@ -5,7 +5,7 @@ From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State StackLayout Run.
 From LinuxProcessSemantics.LinuxProcessSem.Sys Require Import Syscall Uapi.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
-From OssFuzzTheorems.Proofs.zstd.fse_read_ncount.lib.AS Require Import PlacementSearch.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Unset Lia Cache.
 Import ListNotations.
 Open Scope Z_scope.
@@ -34,8 +34,7 @@ pose proof (Z.ldiff_spec (bv_unsigned flags) MAP_NORESERVE 5) as HD. rewrite Hc,
 change (Z.testbit MAP_ANONYMOUS 5) with true in HL. change (Z.testbit MAP_NORESERVE 5) with false in HD.
 destruct (Z.testbit (bv_unsigned flags) 5); discriminate.
 Qed.
-Lemma page_round_up_Z_aligned' : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 Lemma firstn1_skipn_nth : forall (l : list byte) (i : nat) (d : byte),
 (i < length l)%nat -> firstn 1 (skipn i l) = [nth i l d].
 Proof.

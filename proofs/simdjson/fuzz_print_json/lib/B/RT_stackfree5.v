@@ -133,7 +133,7 @@ Proof.
   { intros a N1 N2 N3. unfold mA, flag_back. destruct (Z.eqb_spec (bv_unsigned a) fl) as [E|E]; [reflexivity|].
     apply MU. cbn [outside]. split; [lia|]. split; [exact N2|]. split; [exact N3 | exact I]. }
   assert (HlastA : ro_cells bsegs mA (f + 2040) [C8 (Z_to_bv 64 fl)]).
-  { apply (D_kit.ro_cells_agree bsegs m mA _ _ Hlast). intros a Ha. cbn [cells_size csize Nat.add Z.of_nat] in Ha. apply AGA.
+  { apply (ro_cells_agree bsegs m mA _ _ Hlast). intros a Ha. cbn [cells_size csize Nat.add Z.of_nat] in Ha. apply AGA.
     - lia.
     - unfold K_LOW_SHADOW_lo, K_HIGH_SHADOW_hi, SHB in *. lia.
     - unfold RT_STACK, kFakeStackSize in *. lia. }

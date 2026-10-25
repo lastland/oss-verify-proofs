@@ -3085,6 +3085,7 @@ Import CJ_print.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P Require NumFactsG.
 Import OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P.NumFactsG.NumFacts_iface.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P Require Import NumFactsG.
+From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec Require NumFacts FloatScan_nn.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P Require F_printf_iface Scan_iface F_vsnprintf F_sscanf.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
@@ -3102,7 +3103,7 @@ Theorem pv_num_case' : forall HI n, pv_case_at PV_NUM_ENTRY HI n.
 Proof.
   intros HI n.
   exact (pv_num_case HI F_vsnprintf.sprintf_d_proof F_vsnprintf.sprintf_g_proof F_sscanf.rsscanf_lg_proof
-           fmt_g_ret_proof fmt_g_len25_proof num_fmt_g_facts_proof num_fmt_g_total_proof num_fmt_d_total_proof num_sscanf_junk_proof n).
+           fmt_g_ret_proof fmt_g_len25_proof num_fmt_g_facts_proof NumFacts.fmt_g_total NumFacts.fmt_d_spec FloatScan_nn.FloatScan_junk.sscanf_junk n).
 Qed.
 
 Theorem pvalue_spec' : forall HI n, pvalue_spec_at HI n.

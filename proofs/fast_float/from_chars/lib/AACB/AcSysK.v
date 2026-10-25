@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool FunctionalExtensionality.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType State Monad Run Specs.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
@@ -249,7 +250,7 @@ Proof. LiaFast.lf_pins (fun (Hsegb Hoff Hrespos Hreswf : LiaFast.U) => LiaFast.u
   set (n0 := page_round_up_Z (bv_unsigned len)).
   assert (HnZ : page_round_up_Z (bv_unsigned len) = n0) by reflexivity.
   assert (HnZpos : 0 < n0) by (rewrite <- HnZ; exact (len_nZ_pos _ Hnz0)).
-  assert (HnZal : n0 mod 4096 = 0) by (rewrite <- HnZ; exact (page_round_up_Z_aligned' _)).
+  assert (HnZal : n0 mod 4096 = 0) by (rewrite <- HnZ; exact (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned _)).
   assert (Hn0n : n0 <= n) by (pose proof (pru_mono _ _ (proj2 Rln)); unfold n0; lia).
   assert (Hnpos : 0 < n) by lia.
   assert (Hgj : In g (sm_maps M)) by exact (nth_error_In _ _ Hj).

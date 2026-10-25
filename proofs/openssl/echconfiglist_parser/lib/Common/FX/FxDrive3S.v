@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool Uint63 PrimString.
 From stdpp Require Import bitvector.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem.
@@ -661,7 +662,7 @@ Proof.
   set (sl := (nZi >> 3)%uint63) in *.
   set (rgp := RG 0 nZi 12 (Some PKZero) iempty grant_clo (grant_chi nZi)).
   assert (Hrn : rho1 n = a) by (unfold rho1; apply rho_upd_same).
-  assert (HnZmod : nZ mod 4096 = 0) by (apply page_round_up_Z_mod).
+  assert (HnZmod : nZ mod 4096 = 0) by (apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   assert (HnZpos : 0 < nZ) by (apply page_round_up_Z_pos; exact Hpos).
   assert (Hsl : 8 * to_Z sl = to_Z nZi /\ 0 < to_Z sl).
   { unfold sl. rewrite lsr_spec. change (2 ^ to_Z 3) with 8. rewrite HnZ.

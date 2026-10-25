@@ -2582,151 +2582,157 @@
  (depends rocq-oss-fuzz-theorems-core))
 
 (package
+ (name rocq-oss-fuzz-theorems-proofs-shared)
+ (synopsis "Shared helpers for proofs of OSS-Fuzz theorem statements")
+ (license MIT)
+ (depends rocq-oss-fuzz-theorems-core))
+
+(package
  (name rocq-oss-fuzz-theorems-boost-beast-proofs)
  (synopsis "Proofs of statements about boost-beast's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-boost-json-proofs)
  (synopsis "Proofs of statements about boost-json's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-bzip2-proofs)
  (synopsis "Proofs of statements about bzip2's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-cgif-proofs)
  (synopsis "Proofs of statements about cgif's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-cjson-proofs)
  (synopsis "Proofs of statements about cjson's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-coturn-proofs)
  (synopsis "Proofs of statements about coturn's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-double-conversion-proofs)
  (synopsis "Proofs of statements about double-conversion's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-fast_float-proofs)
  (synopsis "Proofs of statements about fast_float's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-glaze-proofs)
  (synopsis "Proofs of statements about glaze's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-json-c-proofs)
  (synopsis "Proofs of statements about json-c's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-jsoncons-proofs)
  (synopsis "Proofs of statements about jsoncons's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-leptonica-proofs)
  (synopsis "Proofs of statements about leptonica's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-libpcap-proofs)
  (synopsis "Proofs of statements about libpcap's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-mbedtls-proofs)
  (synopsis "Proofs of statements about mbedtls's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-msgpack-c-proofs)
  (synopsis "Proofs of statements about msgpack-c's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-openssl-proofs)
  (synopsis "Proofs of statements about openssl's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-pupnp-proofs)
  (synopsis "Proofs of statements about pupnp's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-simdjson-proofs)
  (synopsis "Proofs of statements about simdjson's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-skcms-proofs)
  (synopsis "Proofs of statements about skcms's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-speex-proofs)
  (synopsis "Proofs of statements about speex's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-spirv-tools-proofs)
  (synopsis "Proofs of statements about spirv-tools's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-tinyobjloader-proofs)
  (synopsis "Proofs of statements about tinyobjloader's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-varnish-proofs)
  (synopsis "Proofs of statements about varnish's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-yajl-ruby-proofs)
  (synopsis "Proofs of statements about yajl-ruby's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))
 
 (package
  (name rocq-oss-fuzz-theorems-zstd-proofs)
  (synopsis "Proofs of statements about zstd's OSS-Fuzz harnesses")
  (license MIT)
- (depends rocq-oss-fuzz-theorems-core))
+ (depends rocq-oss-fuzz-theorems-core rocq-oss-fuzz-theorems-proofs-shared))

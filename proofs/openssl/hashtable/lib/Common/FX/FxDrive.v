@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool Uint63 PrimString.
 From stdpp Require Import bitvector.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem.
@@ -1138,7 +1139,7 @@ Proof.
   pose proof (pg_up_spec len Hle) as HnZ.
   set (nZi := pg_up len) in *. set (nZ := page_round_up_Z (to_Z len)) in *.
   assert (HnZpos : 0 < nZ) by (apply page_round_up_Z_pos; exact Hpos).
-  assert (HnZmod : nZ mod 4096 = 0) by (apply page_round_up_Z_mod).
+  assert (HnZmod : nZ mod 4096 = 0) by (apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   unfold tag_ok in Htag. apply andb_true_iff in Htag as [Htag Hlt].
   apply andb_true_iff in Htag as [Hn0 Hn61]. apply ltb_spec in Hn0, Hn61. rewrite to_Z_0 in Hn0.
   change (to_Z 1152921504606846976) with (2 ^ 60) in Hn61.
@@ -1292,7 +1293,7 @@ Proof.
   pose proof (pg_up_spec len Hle) as HnZ.
   set (nZi := pg_up len) in *. set (nZ := page_round_up_Z (to_Z len)) in *.
   assert (HnZpos : 0 < nZ) by (apply page_round_up_Z_pos; exact Hpos).
-  assert (HnZmod : nZ mod 4096 = 0) by (apply page_round_up_Z_mod).
+  assert (HnZmod : nZ mod 4096 = 0) by (apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   unfold tag_ok in Htag. apply andb_true_iff in Htag as [Htag Hlt].
   apply andb_true_iff in Htag as [Hn0 Hn61]. apply ltb_spec in Hn0, Hn61. rewrite to_Z_0 in Hn0.
   change (to_Z 1152921504606846976) with (2 ^ 60) in Hn61.
@@ -1753,7 +1754,7 @@ Proof.
   pose proof (pg_up_spec len Hle) as HnZ.
   set (nZi := pg_up len) in *. set (nZ := page_round_up_Z (to_Z len)) in *.
   assert (HnZpos : 0 < nZ) by (apply page_round_up_Z_pos; exact Hpos).
-  assert (HnZmod : nZ mod 4096 = 0) by (apply page_round_up_Z_mod).
+  assert (HnZmod : nZ mod 4096 = 0) by (apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   unfold tag_ok in Htag. apply andb_true_iff in Htag as [Htag Hlt].
   apply andb_true_iff in Htag as [Hn0 Hn61]. apply ltb_spec in Hn0, Hn61. rewrite to_Z_0 in Hn0.
   change (to_Z 1152921504606846976) with (2 ^ 60) in Hn61.
@@ -1914,7 +1915,7 @@ Proof.
   pose proof (pg_up_spec len Hle) as HnZ.
   set (nZi := pg_up len) in *. set (nZ := page_round_up_Z (to_Z len)) in *.
   assert (HnZpos : 0 < nZ) by (apply page_round_up_Z_pos; exact Hpos).
-  assert (HnZmod : nZ mod 4096 = 0) by (apply page_round_up_Z_mod).
+  assert (HnZmod : nZ mod 4096 = 0) by (apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned).
   unfold tag_ok in Htag. apply andb_true_iff in Htag as [Htag Hlt].
   apply andb_true_iff in Htag as [Hn0 Hn61]. apply ltb_spec in Hn0, Hn61. rewrite to_Z_0 in Hn0.
   change (to_Z 1152921504606846976) with (2 ^ 60) in Hn61.
@@ -2053,7 +2054,7 @@ Proof.
   apply leb_spec in Hc0. change (to_Z 12) with 12 in Hc0.
   pose proof (pg_up_spec len ltac:(lia)) as Hup.
   pose proof (page_round_up_Z_lt (to_Z len)) as Hlt. unfold page_size in Hlt.
-  pose proof (page_round_up_Z_ge (to_Z len)) as Hge.
+  pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (to_Z len)) as Hge.
   pose proof (i63_range off) as Hoff.
   assert (Hadd : to_Z (off + pg_up len)%uint63 = to_Z off + page_round_up_Z (to_Z len)).
   { rewrite add_spec, i63_wB, Hup. apply Z.mod_small. lia. }
@@ -2268,7 +2269,7 @@ Proof.
     as (rg & Hg & Hlt & Hnk & Hlen & Hoff & Hsum & Hadd & Hal0 & Halign).
   exists rg. pose proof (pg_up_spec len (proj2 Hlen)) as HnZ.
   assert (Hpos : 0 < page_round_up_Z (to_Z len)) by (apply page_round_up_Z_pos; lia).
-  pose proof (page_round_up_Z_mod (to_Z len)) as Hmod. unfold page_size in Hmod.
+  pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned (to_Z len)) as Hmod. unfold page_size in Hmod.
   destruct (pages_of_nat _ Hpos Hmod) as [Hk Hkpos].
   constructor; try assumption.
   - exact (lsr12_mul off Hal0).

@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require ZArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require BvBase State Specs.
 From OssFuzzTheorems.Proofs.json_c.json_object_fuzzer.lib Require Import EdAlloc.
@@ -22,12 +23,7 @@ pose proof (Z.div_mod (x + 4096 - 1) 4096 ltac:(lia)) as D. pose proof (Z.mod_po
 split; [lia|]. apply Z_mod_mult.
 Qed.
 
-Lemma pru_le_aligned : forall x a, x <= a -> a mod 4096 = 0 -> page_round_up_Z x <= a.
-Proof.
-intros x a Hle Ha. unfold page_round_up_Z. change page_size with 4096.
-pose proof (Z.div_mod a 4096 ltac:(lia)) as D. rewrite Ha, Z.add_0_r in D.
-assert ((x + 4096 - 1) / 4096 < a / 4096 + 1) by (apply Z.div_lt_upper_bound; lia). lia.
-Qed.
+
 
 Lemma find_none_forall {A} : forall (P : A -> bool) (l : list A),
 List.find P l = None -> forall x, In x l -> P x = false.
@@ -37,29 +33,13 @@ cbn in Hf. destruct (P y) eqn:Py; [discriminate|].
 destruct Hin as [<-|Hin]; [exact Py | exact (IH Hf x Hin)].
 Qed.
 
-Lemma fold_max_ge_seed : forall l s, s <= fold_left Z.max l s.
-Proof. induction l as [|x l IH]; intros s; cbn; [lia|]. specialize (IH (Z.max s x)). lia. Qed.
 
-Lemma fold_max_ge_in : forall l s x, In x l -> x <= fold_left Z.max l s.
-Proof.
-induction l as [|y l IH]; intros s x Hin; [destruct Hin|]. cbn. destruct Hin as [<-|Hin].
-- pose proof (fold_max_ge_seed l (Z.max s y)). lia.
-- apply IH. exact Hin.
-Qed.
 
-Lemma fold_max_le : forall l s b, s <= b -> (forall x, In x l -> x <= b) -> fold_left Z.max l s <= b.
-Proof.
-induction l as [|y l IH]; intros s b Hs Hl; cbn; [exact Hs|]. apply IH; [pose proof (Hl y (or_introl eq_refl)); lia|].
-intros x Hx. apply Hl. right. exact Hx.
-Qed.
 
-Lemma fold_max_in_or_seed : forall l s, fold_left Z.max l s = s \/ In (fold_left Z.max l s) l.
-Proof.
-induction l as [|y l IH]; intros s; cbn; [left; reflexivity|].
-destruct (IH (Z.max s y)) as [E|E].
-- rewrite E. destruct (Z.max_spec s y) as [[_ ->]|[_ ->]]; [right; left; reflexivity| left; reflexivity].
-- right. right. exact E.
-Qed.
+
+
+
+
 
 Definition zsumf {A} (f : A -> Z) (l : list A) : Z := fold_right (fun x acc => f x + acc) 0 l.
 
@@ -104,19 +84,19 @@ set (cs := List.filter (fun e => e <=? aZ) (map iv_end_up L)).
 set (c := fold_left Z.max cs 4096).
 assert (Hcs : forall x, In x cs <-> In x (map iv_end_up L) /\ (x <=? aZ) = true)
 by (intro x; unfold cs; exact (filter_In _ x _)).
-assert (Hclo : 4096 <= c) by (unfold c; apply fold_max_ge_seed).
+assert (Hclo : 4096 <= c) by (unfold c; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_ge_seed).
 assert (Ha4 : 4096 <= aZ) by (pose proof (Z.div_mod aZ 4096 ltac:(lia)); nia).
 assert (Hchi : c <= aZ).
-{ unfold c. apply fold_max_le; [lia|]. intros x Hx. apply Hcs in Hx. apply Z.leb_le. exact (proj2 Hx). }
+{ unfold c. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_le; [lia|]. intros x Hx. apply Hcs in Hx. apply Z.leb_le. exact (proj2 Hx). }
 assert (HcW : bv_unsigned (Z_to_bv 64 c) = c)
 by (rewrite Z_to_bv_unsigned; apply bv_wrap_small; change (bv_modulus 64) with (2 ^ 64); lia).
 assert (Hcal : c mod 4096 = 0).
-{ destruct (fold_max_in_or_seed cs 4096) as [Heq|Hin].
+{ destruct (OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_in_or_seed cs 4096) as [Heq|Hin].
 - fold c in Heq. rewrite Heq. reflexivity.
 - fold c in Hin. apply Hcs in Hin as [Hin _]. apply in_map_iff in Hin as (p & Hp & _).
 rewrite <- Hp. apply (proj2 (pru_spec _)). }
 assert (Hmax : forall p, In p L -> iv_end_up p <= aZ -> iv_end_up p <= c).
-{ intros p Hp Hle. unfold c. apply fold_max_ge_in. apply Hcs. split; [apply in_map; exact Hp | apply Z.leb_le; exact Hle]. }
+{ intros p Hp Hle. unfold c. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_ge_in. apply Hcs. split; [apply in_map; exact Hp | apply Z.leb_le; exact Hle]. }
 assert (Hcfree : region_free L (Z_to_bv 64 c) (Z_to_bv 64 nZ) = true).
 { apply region_free_intro. intros b s Hin.
 pose proof (region_free_In _ _ _ _ _ Hfree Hin) as Hno.
@@ -124,7 +104,7 @@ unfold iv_overlap in *. rewrite HnW in Hno. fold aZ in Hno. rewrite HcW, HnW.
 apply andb_false_iff in Hno. apply andb_false_iff.
 destruct Hno as [Hno|Hno].
 - apply Z.ltb_ge in Hno. left. apply Z.ltb_ge.
-assert (Hr : iv_end_up (b, s) <= aZ) by (unfold iv_end_up; cbn [fst snd]; apply pru_le_aligned; [lia | exact Hal]).
+assert (Hr : iv_end_up (b, s) <= aZ) by (unfold iv_end_up; cbn [fst snd]; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_le; [lia | exact Hal]).
 pose proof (Hmax _ Hin Hr) as Hrc. unfold iv_end_up in Hrc. cbn [fst snd] in Hrc.
 pose proof (proj1 (pru_spec (bv_unsigned b + bv_unsigned s))). lia.
 - apply Z.ltb_ge in Hno. right. apply Z.ltb_ge. lia. }
@@ -133,7 +113,7 @@ destruct (List.find (vm_base_ok h nZ) (vm_base_candidates h)) as [x|] eqn:Hf; [r
 exfalso.
 assert (Hin : In (Z_to_bv 64 c) (vm_base_candidates h)).
 { unfold vm_base_candidates. fold L.
-destruct (fold_max_in_or_seed cs 4096) as [Heq|Hin].
+destruct (OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_in_or_seed cs 4096) as [Heq|Hin].
 - left. fold c in Heq. rewrite Heq. reflexivity.
 - right. fold c in Hin. apply Hcs in Hin as [Hin _]. apply in_map_iff in Hin as (p & Hp & HinL).
 apply in_map_iff. exists p. split; [|exact HinL]. rewrite <- Hp. reflexivity. }
@@ -222,86 +202,3 @@ From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 Import ListNotations.
 Open Scope bv_scope.
-
-Definition no_higher_fit (maps : list (word * word)) (aZ nZ baseZ : Z)
-: Prop :=
-forall g : Z,
-(g mod page_size = 0)%Z ->
-(aZ + nZ <= g)%Z ->
-(g + nZ <= baseZ)%Z ->
-region_free maps (Z_to_bv 64 g) (Z_to_bv 64 nZ) = false.
-
-Definition fit_candidates (maps : list (word * word)) (aZ nZ : Z)
-: list Z :=
-(aZ + nZ)%Z
-:: map (fun p => page_round_up_Z (bv_unsigned (fst p)
-+ bv_unsigned (snd p))%Z)
-maps.
-
-Definition higher_fit_b (maps : list (word * word)) (aZ nZ baseZ : Z)
-: bool :=
-existsb (fun g => (g mod page_size =? 0)%Z
-&& (aZ + nZ <=? g)%Z && (g + nZ <=? baseZ)%Z
-&& region_free maps (Z_to_bv 64 g) (Z_to_bv 64 nZ))
-(fit_candidates maps aZ nZ).
-
-Lemma page_round_up_Z_le : forall z b,
-(z <= b)%Z -> (b mod page_size = 0)%Z -> (page_round_up_Z z <= b)%Z.
-Proof.
-intros z b Hzb Hb. unfold page_round_up_Z, page_size in *.
-pose proof (Z.div_mod b 4096 ltac:(lia)) as Hbm.
-assert (Hq : ((z + 4096 - 1) / 4096 < b / 4096 + 1)%Z)
-by (apply Z.div_lt_upper_bound; lia).
-apply Z.le_trans with (m := (b / 4096 * 4096)%Z); [|lia].
-apply Z.mul_le_mono_nonneg_r; lia.
-Qed.
-
-Definition search_candidates (maps : list (word * word)) (loZ : Z)
-: list Z :=
-loZ :: map (fun p => page_round_up_Z (bv_unsigned (fst p)
-+ bv_unsigned (snd p))%Z)
-maps.
-
-Definition place_fits (maps : list (word * word)) (loZ hiZ nZ : Z) (g : Z)
-: bool :=
-(g mod page_size =? 0)%Z && (loZ <=? g)%Z && (g + nZ <=? hiZ)%Z
-&& region_free maps (Z_to_bv 64 g) (Z_to_bv 64 nZ).
-
-Definition place (maps : list (word * word)) (loZ hiZ nZ : Z)
-: option Z :=
-find (place_fits maps loZ hiZ nZ) (search_candidates maps loZ).
-
-Definition place_in_model (h : VmMaps) (nZ : Z) : option Z :=
-place (vm_reserved h ++ vm_maps h) page_size (alloc_top h) nZ.
-
-Example place_accepts_a_negative_length :
-place_in_model (mkVmMaps [] [] 0 0 0) (-4096) = Some 4096%Z.
-Proof. vm_compute. reflexivity. Qed.
-
-Definition witness_ledger : list (word * word) :=
-[(Z_to_bv 64 4096, Z_to_bv 64 8192)].
-
-Definition demo_top : Z := alloc_top (mkVmMaps [] [] 0 0 0).
-
-Example place_skips_the_occupied_floor :
-place witness_ledger page_size demo_top 4096 = Some 12288%Z.
-Proof. vm_compute. reflexivity. Qed.
-
-Example place_complete_premises_are_satisfiable :
-(0 <= page_size)%Z /\ (0 < 4096)%Z
-/\ (page_size mod page_size = 0)%Z /\ (4096 mod page_size = 0)%Z
-/\ (demo_top < two_pow_64)%Z
-/\ (12288 mod page_size = 0)%Z /\ (page_size <= 12288)%Z
-/\ (12288 + 4096 <= demo_top)%Z
-/\ region_free witness_ledger (Z_to_bv 64 12288) (Z_to_bv 64 4096) = true.
-Proof.
-unfold page_size, demo_top, two_pow_64. rewrite alloc_top_mkVmMaps.
-repeat split; try (vm_compute; reflexivity); try lia.
-Qed.
-
-Definition full_ledger : list (word * word) :=
-[(Z_to_bv 64 4096, Z_to_bv 64 (demo_top - 4096))].
-
-Example place_finds_nothing_when_full :
-place full_ledger page_size demo_top 4096 = None.
-Proof. vm_compute. reflexivity. Qed.

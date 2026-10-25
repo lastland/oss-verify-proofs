@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 
+From OssFuzzTheorems.Proofs.Shared Require Import ZBits.
 From Stdlib Require ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Prelude Instr Decode DecodeC Sem Fpu.
@@ -530,7 +531,7 @@ intros hi lo Hh Hl. unfold mk128. apply OssFuzzTheorems.Proofs.json_c.json_objec
 rewrite Z.shiftl_mul_pow2 by lia. change (2^128) with (2^64 * 2^64). nia.
 Qed.
 #[using="Type"] Lemma shr64_range64 : forall a k, 0 <= a < 2^64 -> 0 <= k -> 0 <= Z.shiftr a k < 2^64.
-Proof. intros. apply QsjA.Z_shiftr_range; lia. Qed.
+Proof. intros. apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_shiftr_range; lia. Qed.
 #[using="Type"] Lemma sra63_range : forall x, 0 <= sra63 x < 2^64.
 Proof. intros x. unfold sra63, ONES64. destruct (is_neg64 x); cbn; lia. Qed.
 #[using="Type"] Lemma f128_of_d_range : forall d, 0 <= f128_of_d d < 2^128.
@@ -544,7 +545,7 @@ assert (RsignHi : 0 <= signHi < 2^64) by (subst signHi; apply wrap64_range).
 assert (RINF : 0 <= INF_HI < 2^64) by (unfold INF_HI; lia).
 assert (RIMP : 0 <= IMPLICIT_HI < 2^64) by (unfold IMPLICIT_HI; lia).
 assert (G : forall e s, 0 <= e < 2^64 -> 0 <= s < 2^64 -> 0 <= Z.lor (Z.lor e s) signHi < 2^64).
-{ intros e s He Hs. apply QsjA.Z_lor_range; [apply QsjA.Z_lor_range|]; lia. }
+{ intros e s He Hs. apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_lor_range; [apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_lor_range|]; lia. }
 cbv zeta.
 destruct (negb (aExp =? 0)).
 - destruct (negb (aExp =? 2047)); apply mk128_range; try apply wrap64_range;
@@ -552,7 +553,7 @@ apply G; try apply wrap64_range; try (apply shr64_range64; lia). exact RINF.
 - destruct (aSig =? 0).
 + apply mk128_range; [|lia]. apply G; [apply wrap64_range | lia].
 + apply mk128_range.
-* apply G; [apply wrap64_range|]. apply QsjA.Z_lxor_range; [|exact RIMP].
+* apply G; [apply wrap64_range|]. apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_lxor_range; [|exact RIMP].
 destruct (negb (is_neg64 _)); [apply wrap64_range|]. apply shr64_range64; [|apply Z.land_nonneg; lia].
 apply shr64_range64; lia.
 * apply OssFuzzTheorems.Proofs.json_c.json_object_fuzzer.lib.Lib.GwApply.Bytes.land_lt_pow2; [apply sra63_range|].

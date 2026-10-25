@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From stdpp Require Import decidable.
 From LinuxProcessSemantics.LinuxProcessSem Require Import
@@ -190,7 +191,7 @@ Lemma pruZ_idem : forall z, 0 <= z -> page_round_up_Z (page_round_up_Z z) = page
 Proof.
   intros z Hz. apply page_round_up_Z_aligned.
   - pose proof (page_round_up_Z_bounds z Hz). lia.
-  - apply page_round_up_Z_aligned'.
+  - apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned.
 Qed.
 
 Lemma rz_sys_mprotect_at : forall md (R : bvmap 5 word) (pc : word) w mm rom (s : mstate) (addr len a0v n1 : word)

@@ -9,7 +9,8 @@ From OssFuzzTheorems.Proofs.jsoncons.fuzz_bson_parser_max.lib Require BvWfKernel
 
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
-From OssFuzzTheorems.Proofs.jsoncons.fuzz_bson_parser_max.lib Require Import AsanCeil PlacementSearch.  (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.jsoncons.fuzz_bson_parser_max.lib Require Import AsanCeil.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.  (* [comment removed for export] *)
 Import ListNotations.
 Open Scope bv_scope.
 Local Open Scope Z_scope.

@@ -1,6 +1,7 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From OssFuzzTheorems.Proofs.glaze.binary_reflection.lib Require BvWfKernel.
 From OssFuzzTheorems.Proofs.glaze.binary_reflection.lib Require WdZS.
 (* [comment removed for export] *)
@@ -379,8 +380,7 @@ Proof.
   lia.
 Qed.
 
-Lemma page_round_up_Z_mod' : forall z, (page_round_up_Z z mod page_size = 0)%Z.
-Proof. intro z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 
 Lemma page_round_up_Z_nonneg' : forall z, (0 <= z)%Z -> (0 <= page_round_up_Z z)%Z.
 Proof.
@@ -433,7 +433,7 @@ Lemma mremap_fresh_b_relim : forall L m old_nZ new_size old old_n dst,
 Proof.
   intros L m old_nZ new_size old old_n dst HL Hfit Hnew Hmove.
   pose proof (page_align_is0_b_false_word' new_size Hnew) as Hnw.
-  pose proof (page_round_up_Z_mod' (bv_unsigned new_size)) as Hnmod.
+  pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned (bv_unsigned new_size)) as Hnmod.
   assert (Hnpos : (0 < page_round_up_Z (bv_unsigned new_size))%Z).
   { unfold page_align_is0_b in Hnew. apply orb_false_iff in Hnew as [Hz _].
     pose proof (w_is0_false_pos new_size Hz).

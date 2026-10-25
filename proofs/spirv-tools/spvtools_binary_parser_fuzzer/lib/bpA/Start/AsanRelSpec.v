@@ -1,6 +1,7 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From OssFuzzTheorems.Proofs.spirv_tools.spvtools_binary_parser_fuzzer.lib Require BvWfKernel.
 
 From Stdlib Require Import ZArith NArith List Lia Bool.
@@ -11,13 +12,7 @@ Import ListNotations.
 Open Scope bv_scope.
 #[global] Unset Lia Cache. #[global] Unset Nia Cache. #[global] Unset Nra Cache.
 
-Lemma arel_page_round_up_Z_ge : forall z, (z <= page_round_up_Z z)%Z.
-Proof.
-  intro z. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-  pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)).
-  lia.
-Qed.
+
 
 Lemma map_contains_false_of_free : forall maps (addr n : word),
   (0 < bv_unsigned n)%Z ->
@@ -123,7 +118,7 @@ Proof.
   pose proof (word_unsigned_range addr) as Har.
   pose proof (alloc_top_lt (m_vmmaps m)) as Htop.
   assert (HnZ : (0 < page_round_up_Z (bv_unsigned len))%Z).
-  { pose proof (arel_page_round_up_Z_ge (bv_unsigned len)). pose proof (word_unsigned_range len).
+  { pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (bv_unsigned len)). pose proof (word_unsigned_range len).
     assert (bv_unsigned len <> 0%Z).
     { intros E. unfold w_is0, bv_eqb in Hlen. rewrite E in Hlen. cbn in Hlen. discriminate. }
     lia. }
@@ -175,7 +170,7 @@ Proof.
   pose proof (word_unsigned_range addr) as Har.
   pose proof (alloc_top_lt (m_vmmaps m)) as Htop.
   assert (HnZ : (0 < page_round_up_Z (bv_unsigned len))%Z).
-  { pose proof (arel_page_round_up_Z_ge (bv_unsigned len)). pose proof (word_unsigned_range len).
+  { pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (bv_unsigned len)). pose proof (word_unsigned_range len).
     assert (bv_unsigned len <> 0%Z).
     { intros E. unfold w_is0, bv_eqb in Hlen. rewrite E in Hlen. cbn in Hlen. discriminate. }
     lia. }

@@ -5,7 +5,8 @@
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType Fs State Monad Specs Run.
 From LinuxProcessSemantics.Riscv Require Import Prelude.
-From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Lib Require Import PropExec MState Mem Cells Exec ITree RelSpec Nodes PlacementSearch.
+From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Lib Require Import PropExec MState Mem Cells Exec ITree RelSpec Nodes.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.LibA Require Import AcctCore ExecF ModelX MmXfer SpecXfer.
 From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.LibA Require Import ITreeA NodesA NodesSil.
 From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.Common Require AllocSim2__Common.

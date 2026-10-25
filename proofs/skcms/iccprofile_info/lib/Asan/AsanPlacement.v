@@ -7,7 +7,8 @@
 
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
-From OssFuzzTheorems.Proofs.skcms.iccprofile_info.lib.Asan Require Import AsanCeil PlacementSearch.
+From OssFuzzTheorems.Proofs.skcms.iccprofile_info.lib.Asan Require Import AsanCeil.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Unset Lia Cache. Unset Nia Cache.  (* [comment removed for export] *)  (* [comment removed for export] *)
 Import ListNotations.
 Open Scope bv_scope.

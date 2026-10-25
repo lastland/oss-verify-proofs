@@ -8,7 +8,8 @@
 
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
-From OssFuzzTheorems.Proofs.double_conversion.string_to_double_fuzzer.lib Require Import AsanCeil PlacementSearch.
+From OssFuzzTheorems.Proofs.double_conversion.string_to_double_fuzzer.lib Require Import AsanCeil.
+From OssFuzzTheorems.Proofs.Shared Require Import PlacementSearch.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.  (* [comment removed for export] *)
 Import ListNotations.
 Open Scope bv_scope.

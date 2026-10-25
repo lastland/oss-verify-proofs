@@ -1,6 +1,7 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State.
 From LinuxProcessSemantics.LinuxProcessSem.Sys.Mm Require Import Mmap.
@@ -32,12 +33,12 @@ Proof.
   set (b0 := fold_left Z.max cs page_size).
   assert (Hcs : forall x, In x cs <-> In x cZ /\ (x <=? G) = true)
     by (intro x; unfold cs; exact (filter_In _ x _)).
-  assert (Hlo : page_size <= b0) by (unfold b0; apply vm_base_fold_max_ge_seed).
+  assert (Hlo : page_size <= b0) by (unfold b0; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_ge_seed).
   assert (Hhi : b0 <= G).
-  { unfold b0. apply vm_base_fold_max_le; [exact Hfloor|]. intros x Hx.
+  { unfold b0. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_le; [exact Hfloor|]. intros x Hx.
     apply Hcs in Hx. apply Z.leb_le. exact (proj2 Hx). }
   assert (Hin : In b0 cZ).
-  { destruct (vm_base_fold_max_in_or_seed cs page_size) as [E|E].
+  { destruct (OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_in_or_seed cs page_size) as [E|E].
     - fold b0 in E. rewrite E. left. reflexivity.
     - apply Hcs in E. exact (proj1 E). }
   assert (Hb0W : bv_unsigned (Z_to_bv 64 b0) = b0).
@@ -45,7 +46,7 @@ Proof.
     unfold page_size in Hlo. lia. }
   assert (Hb0Al : b0 mod page_size = 0).
   { destruct Hin as [E|E]; [rewrite <- E; reflexivity|].
-    apply in_map_iff in E. destruct E as (iv & E & _). rewrite <- E. apply vm_base_round_aligned. }
+    apply in_map_iff in E. destruct E as (iv & E & _). rewrite <- E. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned. }
   assert (Hb0free : region_free maps (Z_to_bv 64 b0) (Z_to_bv 64 nZ) = true).
   { apply region_free_intro. intros b s Hbs.
     pose proof (region_free_In _ _ _ _ _ Hgfree Hbs) as Hno.
@@ -55,9 +56,9 @@ Proof.
       assert (Hc : In (page_round_up_Z (bv_unsigned b + bv_unsigned s)) cs).
       { apply Hcs. split.
         - right. apply in_map_iff. exists (b, s). split; [reflexivity | exact Hbs].
-        - apply Z.leb_le. apply vm_base_round_le; [exact Hend | exact HgAl]. }
-      pose proof (vm_base_fold_max_ge_in cs page_size _ Hc) as Hge. fold b0 in Hge.
-      pose proof (vm_base_round_ge (bv_unsigned b + bv_unsigned s)) as Hr.
+        - apply Z.leb_le. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_le; [exact Hend | exact HgAl]. }
+      pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_ge_in cs page_size _ Hc) as Hge. fold b0 in Hge.
+      pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge (bv_unsigned b + bv_unsigned s)) as Hr.
       apply andb_false_iff. left. apply Z.ltb_ge. lia.
     -
       apply andb_false_iff in Hno. destruct Hno as [Hno|Hno]; apply Z.ltb_ge in Hno; [lia|].

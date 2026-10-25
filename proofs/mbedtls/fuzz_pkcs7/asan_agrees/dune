@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.asan_agrees)
  (package rocq-oss-fuzz-theorems-mbedtls-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.mbedtls.fuzz_pkcs7 OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.mbedtls.fuzz_pkcs7 OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib))

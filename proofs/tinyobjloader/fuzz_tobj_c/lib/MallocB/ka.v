@@ -276,7 +276,8 @@ From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require SpineM
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ip.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ir.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require it.
-From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillModel RefillModelP RefillBits.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocA Require RefillBits.
+From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillModel RefillModelP.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ij.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require RefillTR CRefillJ.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require im.
@@ -291,7 +292,7 @@ From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require js.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require jt.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require jw.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require k2.
-Import OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i4.GlueMA OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i0.CertStackFree OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i1.CertStackMalloc OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i7.CertCallocS1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.CertCallocSP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.i0.GlueMC OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.SpineMallocI OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ip.SpineCallocS1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ir.SpineCallocS2 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.it.SpineCallocS3 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillModel OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillModelP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillBits OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ij.CertCallocSR OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.RefillTR OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.CRefillJ OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.im.CRefillJP OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.iy.SpineCallocR1 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.j5.SpineCallocR2 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.je.SpineCallocR3 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.jj.SpineCallocR4 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.jo.SpineCallocR5 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.jr.SpineCallocR6 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.j9.SpineCallocR7 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.js.SpineCallocR11 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.jt.SpineCallocR12 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.jw.SpineCallocR13 OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.k2.SpineCallocR14.
+Import MallocB.i4.GlueMA MallocB.i0.CertStackFree MallocB.i1.CertStackMalloc MallocB.i7.CertCallocS1 MallocB.CertCallocSP MallocB.i0.GlueMC MallocB.SpineMallocI MallocB.ip.SpineCallocS1 MallocB.ir.SpineCallocS2 MallocB.it.SpineCallocS3 MallocB.RefillModel MallocB.RefillModelP MallocA.RefillBits MallocB.ij.CertCallocSR MallocB.RefillTR MallocB.CRefillJ MallocB.im.CRefillJP MallocB.iy.SpineCallocR1 MallocB.j5.SpineCallocR2 MallocB.je.SpineCallocR3 MallocB.jj.SpineCallocR4 MallocB.jo.SpineCallocR5 MallocB.jr.SpineCallocR6 MallocB.j9.SpineCallocR7 MallocB.js.SpineCallocR11 MallocB.jt.SpineCallocR12 MallocB.jw.SpineCallocR13 MallocB.k2.SpineCallocR14.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB Require ig.
 Import OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.MallocB.ig.CallocBase.
 Import ListNotations.
@@ -480,4 +481,3 @@ Proof.
 Qed.
 End ASMP.
 End SpineCallocR15.
-

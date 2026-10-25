@@ -5,6 +5,7 @@
 (* [comment removed for export] *)
 
 From Stdlib Require Import ZArith List Lia Bool.
+From OssFuzzTheorems.Proofs.double_conversion.string_to_double_fuzzer.lib Require FiveTbl.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase RiscvSemantics MemImageType.
 From LinuxProcessSemantics.Riscv Require Import Prelude Instr Decode DecodeC Sem.
 From OssFuzzTheorems.Proofs.double_conversion.string_to_double_fuzzer.lib Require Import PropExec CatExec CatSim SeqExec StoreOk Hoare
@@ -436,13 +437,6 @@ Qed.
 (* [comment removed for export] *)
 Definition five_tbl : list Z := [5; 25; 125; 625; 3125; 15625; 78125; 390625; 1953125; 9765625; 48828125; 244140625].
 
-#[using="Type"] Lemma five_tbl_nth : forall r, 1 <= r <= 12 -> nth (Z.to_nat (r - 1)) five_tbl 0 = 5 ^ r.
-Proof.
-  intros r Hr.
-  assert (H : forallb (fun k => nth k five_tbl 0 =? 5 ^ (Z.of_nat k + 1)) (seq 0 12) = true) by (vm_compute; reflexivity).
-  pose proof (proj1 (forallb_forall _ _) H (Z.to_nat (r - 1)) ltac:(apply in_seq; lia)) as H1. cbn beta in H1.
-  apply Z.eqb_eq in H1. rewrite H1. f_equal. lia.
-Qed.
 
 Definition tbl_keep : list Z := [1; 2; 3; 4; 8; 9; 10; 11; 13; 18; 19; 20; 21; 22; 23; 24; 25; 26; 27].
 
@@ -483,7 +477,7 @@ Proof.
     assert (HF5 : 5 <= 5 ^ r) by (change 5 with (5 ^ 1) at 1; apply Z.pow_le_mono_r; lia).
     assert (HF12 : 5 ^ r <= 244140625) by (change 244140625 with (5 ^ 12); apply Z.pow_le_mono_r; lia).
     assert (Hcell : exists bs, rdn SEGS_P m (Z_to_bv 64 (80516 + 4 * r)) 4 = Some bs /\ bytes_le_to_Z bs = 5 ^ r).
-    { rewrite <- (five_tbl_nth r) by lia. eapply (kc_of_arr32_i _ _ _ _ (Z.to_nat (r - 1))); [exact Htbl | cbn; lia | lia | reflexivity]. }
+    { rewrite <- (FiveTbl.five_tbl_nth r) by lia. eapply (kc_of_arr32_i _ _ _ _ (Z.to_nat (r - 1))); [exact Htbl | cbn; lia | lia | reflexivity]. }
     zx_run SEGS_P constr:(CTX (vi_regs ++ [Some (0, 2 ^ 62); Some (1, 124); Some (1, 12); Some (5, 244140625)]) (@nil kcell) (@nil kwin))
       40%nat [0x35ce4] (SCR [] [ZV 35])
       constr:([(10%bv : reg, ZV 32); (12%bv : reg, ZV 33); (7%bv : reg, ZV 34)]) [o; u; r; 5 ^ r]

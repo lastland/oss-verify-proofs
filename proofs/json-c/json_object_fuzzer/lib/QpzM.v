@@ -2,6 +2,7 @@
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 
+From OssFuzzTheorems.Proofs.Shared Require Import ZBits.
 From Stdlib Require ZArith NArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require BvBase RiscvSemantics MemImageType State Run.
 From LinuxProcessSemantics.Riscv Require Prelude Instr Decode DecodeC Sem Fpu.
@@ -489,7 +490,7 @@ intros hi lo Hh Hl. unfold mk128. apply QwAs.lor_lt_pow2; [|lia].
 rewrite Z.shiftl_mul_pow2 by lia. change (2^128) with (2^64 * 2^64). nia.
 Qed.
 Lemma shr64_range64 : forall a k, 0 <= a < 2^64 -> 0 <= k -> 0 <= Z.shiftr a k < 2^64.
-Proof. intros. apply Qcrs.Z_shiftr_range; lia. Qed.
+Proof. intros. apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_shiftr_range; lia. Qed.
 Lemma sra63_range : forall x, 0 <= sra63 x < 2^64.
 Proof. intros x. unfold sra63, ONES64. destruct (is_neg64 x); cbn; lia. Qed.
 
@@ -5476,7 +5477,7 @@ intros hi lo Hh Hl. unfold mk128. apply QwAs.lor_lt_pow2; [|lia].
 rewrite Z.shiftl_mul_pow2 by lia. change (2^128) with (2^64 * 2^64). nia.
 Qed.
 Lemma shr64_range64 : forall a k, 0 <= a < 2^64 -> 0 <= k -> 0 <= Z.shiftr a k < 2^64.
-Proof. intros. apply Qcrs.Z_shiftr_range; lia. Qed.
+Proof. intros. apply OssFuzzTheorems.Proofs.Shared.ZBits.Z_shiftr_range; lia. Qed.
 Lemma sra63_range : forall x, 0 <= sra63 x < 2^64.
 Proof. intros x. unfold sra63, ONES64. destruct (is_neg64 x); cbn; lia. Qed.
 

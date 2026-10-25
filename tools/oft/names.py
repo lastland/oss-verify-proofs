@@ -7,6 +7,8 @@ on (projects; the harnesses of one project), which `oft lint` checks.
 import re
 
 ROOT = "OssFuzzTheorems"
+SHARED_PROOF_THEORY = ROOT + ".Proofs.Shared"
+SHARED_PROOF_PACKAGE = "rocq-oss-fuzz-theorems-proofs-shared"
 RESERVED_HARNESS_NAMES = {"images", "source", "bin", "proofs"}   # plus api-driver for OSS-Fuzz targets
 API_DRIVER = "api-driver"
 

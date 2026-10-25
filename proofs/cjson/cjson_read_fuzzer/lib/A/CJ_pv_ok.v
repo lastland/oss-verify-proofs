@@ -16,7 +16,9 @@ From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.A Require CJ_ensure CJ_p
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.A Require ICPT_sprintf_b.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.A Require ICPT_sprintf_b.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.A Require ICPT_sscanf_b.
-From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.A Require ICPT_sscanf_b NumFactsG CJ_fmt_glue.
+From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.A Require ICPT_sscanf_b CJ_fmt_glue.
+From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.P Require NumFactsG.
+From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Spec Require NumFacts FloatScan_nn.
 
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Lib Require Import Ceil.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
@@ -33,8 +35,8 @@ Proof.
   exact (print_value_spec AI TI (CJ_ensure.ensure_ok AI TI) (CJ_pstr_ok.pstr_ok AI TI) FL ICPT_mem.asan_memset_ok ICPT_mem2.asan_memcpy_ok
            (CJ_fmt_glue.art_fmt_facts AI) (CJ_fmt_glue.art_fmt_lits AI)
            ICPT_sprintf_b.asprintf_d_ok_b (ICPT_sprintf_b.asprintf_g_ok_b 15) (ICPT_sprintf_b.asprintf_g_ok_b 17) ICPT_sscanf_b.asscanf_lg_ok_b
-           NumFactsG.fmt_g_ret_proof NumFactsG.fmt_g_len25_proof NumFactsG.num_fmt_g_facts_proof NumFactsG.num_fmt_g_total_proof
-           NumFactsG.num_fmt_d_total_proof NumFactsG.num_sscanf_junk_proof ARR OBJ).
+           NumFactsG.fmt_g_ret_proof NumFactsG.fmt_g_len25_proof NumFactsG.num_fmt_g_facts_proof NumFacts.fmt_g_total
+           NumFacts.fmt_d_spec FloatScan_nn.FloatScan_junk.sscanf_junk ARR OBJ).
 Qed.
 
 

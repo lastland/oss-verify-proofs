@@ -3,6 +3,7 @@
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
 From LinuxProcessSemantics.LinuxProcessSem Require Import
@@ -886,7 +887,7 @@ Lemma mmap_fixed_check : forall ms x8 model eff (addr : word) (len : Z),
     end.
 Proof.
   intros ms x8 model eff addr len Hno (H1 & H2 & H3 & H4 & H5) H0 Hal Hpos H11 Hlen Htop n Hrf Hmc.
-  pose proof (page_round_up_Z_ge_all len) as Hge. pose proof (u64_range addr) as Har.
+  pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len) as Hge. pose proof (u64_range addr) as Har.
   assert (Hlen' : (len < 2 ^ 64)%Z) by (alloc_top_bounds; unfold two_pow_64 in *; lia).
   assert (Hu1 : bv_unsigned (ms_gpr ms 1) = len) by (rewrite H11; apply u64_lit; lia).
   rewrite (mmap_check segs ms x8 model eff Hno). unfold check_mmap.
@@ -935,7 +936,7 @@ Lemma rz_mmap_fixed_noaccess : forall regs (pc : word) mem model w (addr : word)
   realizes segs (mkCfg (mkst regs pc mem (seg_rom segs)) model) (t_alt3 KA KB KC).
 Proof.
   intros regs pc mem model w addr len KA KB KC HF HE Hh Hlazy H17 H10 Hal Hpos H11 Hlen Htop H12 H13 H14 H15 n Hrf Hmc HA HB HC.
-  pose proof (u64_range addr) as Har. pose proof (page_round_up_Z_ge_all len) as Hge.
+  pose proof (u64_range addr) as Har. pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_ge len) as Hge.
   assert (Hlen' : (len < 2 ^ 64)%Z) by (alloc_top_bounds; unfold two_pow_64 in *; lia).
   eapply rz_sys; [exact Hh | exact Hlazy | exact HF | exact HE |].
   set (ms := epend regs pc mem (seg_rom segs) (getr regs 17)).

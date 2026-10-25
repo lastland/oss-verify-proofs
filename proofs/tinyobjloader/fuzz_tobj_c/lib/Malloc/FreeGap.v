@@ -1,6 +1,7 @@
 (* Machine-generated data computed from the task's compiled program image (decoder-built tables and encoded data blocks); may contain fragments of third-party object code - see NOTICE. No Anthropic licence header applies to this file. *)
 
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Lib Require TermBlob.
 #[local] Ltac2 tbs__ () := ["@Corelib.Numbers.BinNums"; "Z"; "@Stdlib.ZArith.BinInt.Z"; "le"; "add"; "lt"; "mul"; "pow"; "modulo"; "sub"; "of_nat"; "leb"; "div"; "eqb"; "@Corelib.Init.Logic"; "and"; "eq"; "ex"; "or"; "iff"; "not"; "@Corelib.Init.Datatypes"; "snd"; "prod"; "fst"; "list"; "pair"; "bool"; "length"; "true"; "app"; "@OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Malloc.FreeGap"; "S"; "F"; "class_of"; "total"; "PG"; "ARENA"; "slot"; "disjoint"; "page_len"; "zpair"; "nslots"; "well_placed"; "CEIL"; "BUDGET"; "below_F"; "pairwise"; "zrange"; "NCLASS"; "entry_ok"; "ledger_budget_ok"; "ledger_disciplined"; "slot_idx"; "@Stdlib.Lists.List"; "In"; "filter"; "fold_right"; "@stdpp.bitvector.definitions"; "bv"; "Z_to_bv"; "bv_unsigned"; "@Corelib.Lists.ListDef"; "map"; "@LinuxProcessSemantics.LinuxProcessSem.State"; "page_round_up_Z"; "region_free"; "page_size"].
 #[local] Ltac2 tb__ s := OssFuzzTheorems.Proofs.tinyobjloader.fuzz_tobj_c.lib.Lib.TermBlob.dec2 (tbs__ ()) s.
@@ -352,15 +353,3 @@ Proof.
       * destruct Hn; lia.
       * unfold CEIL in HC. lia.
 Qed.
-
-Lemma page_round_up_Z_ge : ltac2:(tb__ "0|0|
-S0S1R1S38R1A1A2Fz;").
-Proof.
-  intros z. unfold page_round_up_Z, page_size.
-  pose proof (Z.div_mod (z + 4096 - 1) 4096 ltac:(lia)) as H.
-  pose proof (Z.mod_pos_bound (z + 4096 - 1) 4096 ltac:(lia)) as Hr. lia.
-Qed.
-
-Lemma page_round_up_Z_aligned : ltac2:(tb__ "0|0|
-S0SdS0S6S38R1A1S3aA2Z0A3Fz;").
-Proof. intros z. unfold page_round_up_Z, page_size. apply Z_mod_mult. Qed.

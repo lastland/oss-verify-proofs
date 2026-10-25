@@ -7,6 +7,7 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
@@ -232,8 +233,7 @@ Module Asancq9.
 From Stdlib Require Import ZArith List Bool Lia.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Monad Specs.
 From OssFuzzTheorems.Proofs.varnish.esi_parse_fuzzer.lib.Yb Require PropExec.
-From OssFuzzTheorems.Proofs.varnish.esi_parse_fuzzer.lib.Yb Require PlacementSearch.
-Import OssFuzzTheorems.Proofs.varnish.esi_parse_fuzzer.lib.Yb.PropExec.AsanCeil OssFuzzTheorems.Proofs.varnish.esi_parse_fuzzer.lib.Yb.PlacementSearch.  (* [comment removed for export] *)
+Import OssFuzzTheorems.Proofs.varnish.esi_parse_fuzzer.lib.Yb.PropExec.AsanCeil OssFuzzTheorems.Proofs.Shared.PlacementSearch.  (* [comment removed for export] *)
 Import ListNotations.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 (* [comment removed for export] *)

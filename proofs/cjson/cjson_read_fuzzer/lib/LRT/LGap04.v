@@ -4,6 +4,7 @@
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith List Lia Bool.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase State Specs.
 From OssFuzzTheorems.Proofs.cjson.cjson_read_fuzzer.lib.Lib Require Import Cfg.
@@ -30,12 +31,7 @@ Proof.
   rewrite Z.div_add_l by lia. change (4095 / 4096) with 0. lia.
 Qed.
 
-Lemma pru_le_aligned : forall x a, x <= a -> a mod 4096 = 0 -> page_round_up_Z x <= a.
-Proof.
-  intros x a Hle Ha. unfold page_round_up_Z. change page_size with 4096.
-  pose proof (Z.div_mod a 4096 ltac:(lia)) as D. rewrite Ha, Z.add_0_r in D.
-  assert ((x + 4096 - 1) / 4096 < a / 4096 + 1) by (apply Z.div_lt_upper_bound; lia). lia.
-Qed.
+
 
 (* [comment removed for export] *)
 (* [comment removed for export] *)
@@ -49,29 +45,13 @@ Proof.
   destruct Hin as [<-|Hin]; [exact Py | exact (IH Hf x Hin)].
 Qed.
 
-Lemma fold_max_ge_seed : forall l s, s <= fold_left Z.max l s.
-Proof. induction l as [|x l IH]; intros s; cbn; [lia|]. specialize (IH (Z.max s x)). lia. Qed.
 
-Lemma fold_max_ge_in : forall l s x, In x l -> x <= fold_left Z.max l s.
-Proof.
-  induction l as [|y l IH]; intros s x Hin; [destruct Hin|]. cbn. destruct Hin as [<-|Hin].
-  - pose proof (fold_max_ge_seed l (Z.max s y)). lia.
-  - apply IH. exact Hin.
-Qed.
 
-Lemma fold_max_le : forall l s b, s <= b -> (forall x, In x l -> x <= b) -> fold_left Z.max l s <= b.
-Proof.
-  induction l as [|y l IH]; intros s b Hs Hl; cbn; [exact Hs|]. apply IH; [pose proof (Hl y (or_introl eq_refl)); lia|].
-  intros x Hx. apply Hl. right. exact Hx.
-Qed.
 
-Lemma fold_max_in_or_seed : forall l s, fold_left Z.max l s = s \/ In (fold_left Z.max l s) l.
-Proof.
-  induction l as [|y l IH]; intros s; cbn; [left; reflexivity|].
-  destruct (IH (Z.max s y)) as [E|E].
-  - rewrite E. destruct (Z.max_spec s y) as [[_ ->]|[_ ->]]; [right; left; reflexivity| left; reflexivity].
-  - right. right. exact E.
-Qed.
+
+
+
+
 
 (* [comment removed for export] *)
 Definition zsumf {A} (f : A -> Z) (l : list A) : Z := fold_right (fun x acc => f x + acc) 0 l.
@@ -123,19 +103,19 @@ Proof.
   set (c := fold_left Z.max cs 4096).
   assert (Hcs : forall x, In x cs <-> In x (map iv_end_up L) /\ (x <=? aZ) = true)
     by (intro x; unfold cs; exact (filter_In _ x _)).
-  assert (Hclo : 4096 <= c) by (unfold c; apply fold_max_ge_seed).
+  assert (Hclo : 4096 <= c) by (unfold c; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_ge_seed).
   assert (Ha4 : 4096 <= aZ) by (pose proof (Z.div_mod aZ 4096 ltac:(lia)); nia).
   assert (Hchi : c <= aZ).
-  { unfold c. apply fold_max_le; [lia|]. intros x Hx. apply Hcs in Hx. apply Z.leb_le. exact (proj2 Hx). }
+  { unfold c. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_le; [lia|]. intros x Hx. apply Hcs in Hx. apply Z.leb_le. exact (proj2 Hx). }
   assert (HcW : bv_unsigned (Z_to_bv 64 c) = c)
     by (rewrite Z_to_bv_unsigned; apply bv_wrap_small; change (bv_modulus 64) with (2 ^ 64); lia).
   assert (Hcal : c mod 4096 = 0).
-  { destruct (fold_max_in_or_seed cs 4096) as [Heq|Hin].
+  { destruct (OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_in_or_seed cs 4096) as [Heq|Hin].
     - fold c in Heq. rewrite Heq. reflexivity.
     - fold c in Hin. apply Hcs in Hin as [Hin _]. apply in_map_iff in Hin as (p & Hp & _).
       rewrite <- Hp. apply (proj2 (pru_spec _)). }
   assert (Hmax : forall p, In p L -> iv_end_up p <= aZ -> iv_end_up p <= c).
-  { intros p Hp Hle. unfold c. apply fold_max_ge_in. apply Hcs. split; [apply in_map; exact Hp | apply Z.leb_le; exact Hle]. }
+  { intros p Hp Hle. unfold c. apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_ge_in. apply Hcs. split; [apply in_map; exact Hp | apply Z.leb_le; exact Hle]. }
   assert (Hcfree : region_free L (Z_to_bv 64 c) (Z_to_bv 64 nZ) = true).
   { apply region_free_intro. intros b s Hin.
     pose proof (region_free_In _ _ _ _ _ Hfree Hin) as Hno.
@@ -143,7 +123,7 @@ Proof.
     apply andb_false_iff in Hno. apply andb_false_iff.
     destruct Hno as [Hno|Hno].
     - apply Z.ltb_ge in Hno. left. apply Z.ltb_ge.
-      assert (Hr : iv_end_up (b, s) <= aZ) by (unfold iv_end_up; cbn [fst snd]; apply pru_le_aligned; [lia | exact Hal]).
+      assert (Hr : iv_end_up (b, s) <= aZ) by (unfold iv_end_up; cbn [fst snd]; apply OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_le; [lia | exact Hal]).
       pose proof (Hmax _ Hin Hr) as Hrc. unfold iv_end_up in Hrc. cbn [fst snd] in Hrc.
       pose proof (proj1 (pru_spec (bv_unsigned b + bv_unsigned s))). lia.
     - apply Z.ltb_ge in Hno. right. apply Z.ltb_ge. lia. }
@@ -152,7 +132,7 @@ Proof.
   exfalso.
   assert (Hin : In (Z_to_bv 64 c) (vm_base_candidates h)).
   { unfold vm_base_candidates. fold L.
-    destruct (fold_max_in_or_seed cs 4096) as [Heq|Hin].
+    destruct (OssFuzzTheorems.Proofs.Shared.PlacementSearch.fold_max_in_or_seed cs 4096) as [Heq|Hin].
     - left. fold c in Heq. rewrite Heq. reflexivity.
     - right. fold c in Hin. apply Hcs in Hin as [Hin _]. apply in_map_iff in Hin as (p & Hp & HinL).
       apply in_map_iff. exists p. split; [|exact HinL]. rewrite <- Hp. reflexivity. }

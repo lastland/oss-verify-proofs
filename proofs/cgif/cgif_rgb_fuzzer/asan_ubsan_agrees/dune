@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.cgif.cgif_rgb_fuzzer.asan_ubsan_agrees)
  (package rocq-oss-fuzz-theorems-cgif-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.cgif.cgif_rgb_fuzzer OssFuzzTheorems.Proofs.cgif.cgif_rgb_fuzzer.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.cgif.cgif_rgb_fuzzer OssFuzzTheorems.Proofs.cgif.cgif_rgb_fuzzer.lib))

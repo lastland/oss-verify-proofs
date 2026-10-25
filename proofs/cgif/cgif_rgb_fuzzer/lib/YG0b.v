@@ -1,6 +1,7 @@
 (* Copyright 2026 Anthropic PBC *)
 (* SPDX-License-Identifier: Apache-2.0 OR MIT *)
 (* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
+From OssFuzzTheorems.Proofs.Shared Require PlacementSearch.
 From Stdlib Require Import ZArith NArith List Lia Bool.
 From Stdlib Require Import FunctionalExtensionality.
 From LinuxProcessSemantics.EquivalenceDefinition Require Import Equivalence.
@@ -194,8 +195,7 @@ intros q r Hq Hr. destruct (iv_subtract_pieces a sz lo hi q Hp Hq) as (Q1 & Q2 &
 destruct (maps_subtract_pieces l lo hi r Hl Hr) as (r0 & Hr0 & R1 & R2 & _).
 pose proof (proj1 (Forall_forall _ _) Hd _ Hr0) as D. unfold iv_disjoint in D |- *. cbn [fst snd] in D. lia.
 Qed.
-Lemma page_round_up_Z_mod : forall z, page_round_up_Z z mod page_size = 0.
-Proof. intros z. unfold page_round_up_Z. apply Z_mod_mult. Qed.
+
 Lemma AI_forget : forall (Hh : word -> bool) A md md' lo hi,
 AI segs Hh A md -> ivs_wf (m_vm_lazy md) ->
 0 <= lo <= hi -> hi < 2 ^ 64 -> lo mod page_size = 0 -> hi mod page_size = 0 ->
@@ -236,7 +236,7 @@ eager_used md + A_bytes A + page_round_up_Z len <= vm_limit (m_vmmaps md) ->
 Proof.
 intros Hh A md hole flags addr len HAI HW Hnr Hal Hlen Hce n Hplace Hslack.
 pose proof (alloc_top_room (m_vmmaps md)) as Hcv. unfold two_pow_64, stack_max_size in Hcv. pose proof (u64_range addr) as Ra.
-pose proof (page_round_up_Z_bounds len ltac:(lia)) as PR. pose proof (page_round_up_Z_mod len) as PM. unfold page_size in PR, PM.
+pose proof (page_round_up_Z_bounds len ltac:(lia)) as PR. pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned len) as PM. unfold page_size in PR, PM.
 assert (Un : bv_unsigned n = page_round_up_Z len) by (unfold n; apply u64_lit; lia).
 pose proof HW as [(Wm & Wn & Wl & Wi) Ws]. pose proof HAI as (HH1 & HH2 & HH3 & HH4 & HH5).
 set (lo := bv_unsigned addr) in *. set (hi := lo + bv_unsigned n).
@@ -319,7 +319,7 @@ eager_used (grant_md hole flags addr n md) <= eager_used md + page_round_up_Z le
 Proof.
 intros Hh A md hole flags addr len HAI HW Hnr Hal Hlen Hce n Hplace Hslack.
 pose proof (alloc_top_room (m_vmmaps md)) as Hcv. unfold two_pow_64, stack_max_size in Hcv. pose proof (u64_range addr) as Ra.
-pose proof (page_round_up_Z_bounds len ltac:(lia)) as PR. pose proof (page_round_up_Z_mod len) as PM. unfold page_size in PR, PM.
+pose proof (page_round_up_Z_bounds len ltac:(lia)) as PR. pose proof (OssFuzzTheorems.Proofs.Shared.PlacementSearch.page_round_up_Z_aligned len) as PM. unfold page_size in PR, PM.
 assert (Un : bv_unsigned n = page_round_up_Z len) by (unfold n; apply u64_lit; lia).
 pose proof HW as [(Wm & Wn & Wl & Wi) Ws]. pose proof HAI as (HH1 & HH2 & HH3 & HH4 & HH5).
 set (lo := bv_unsigned addr) in *. set (hi := lo + bv_unsigned n).

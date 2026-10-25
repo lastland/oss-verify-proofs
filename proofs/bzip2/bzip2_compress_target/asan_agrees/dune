@@ -2,4 +2,4 @@
 (rocq.theory
  (name OssFuzzTheorems.Proofs.bzip2.bzip2_compress_target.asan_agrees)
  (package rocq-oss-fuzz-theorems-bzip2-proofs)
- (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.bzip2.bzip2_compress_target OssFuzzTheorems.Proofs.bzip2.bzip2_compress_target.lib))
+ (theories Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core Ltac2 OssFuzzTheorems.Proofs.Shared OssFuzzTheorems.bzip2.bzip2_compress_target OssFuzzTheorems.Proofs.bzip2.bzip2_compress_target.lib))
